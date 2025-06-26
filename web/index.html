@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kolmogorov-arnold networks visualizer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🧠 kolmogorov-arnold networks</h1>
+            <p>interactive visualization of learnable functions on network edges</p>
+        </div>
+    </header>
+
+    <nav class="controls">
+        <div class="container">
+            <div class="control-group">
+                <label for="model-select">model:</label>
+                <select id="model-select">
+                    <option value="model_1d">1d function (simple)</option>
+                    <option value="model_2d">2d function (medium)</option>
+                    <option value="model_complex">complex network (deep)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="visualization-mode">view:</label>
+                <select id="visualization-mode">
+                    <option value="network">network graph</option>
+                    <option value="splines">spline functions</option>
+                    <option value="inference">live inference</option>
+                    <option value="training">training history</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="play-button" class="play-btn">▶ animate data flow</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- network visualization panel -->
+        <section id="network-panel" class="panel active">
+            <div class="panel-header">
+                <h2>network architecture</h2>
+                <div class="info">
+                    <span id="network-info">loading...</span>
+                </div>
+            </div>
+            <div class="visualization-container">
+                <svg id="network-svg"></svg>
+                <div id="network-sidebar">
+                    <div id="layer-details">
+                        <h3>layer details</h3>
+                        <div id="layer-info">select a layer to see details</div>
+                    </div>
+                    <div id="edge-details">
+                        <h3>edge function</h3>
+                        <div id="edge-plot"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- spline visualization panel -->
+        <section id="splines-panel" class="panel">
+            <div class="panel-header">
+                <h2>learnable spline functions</h2>
+                <div class="controls">
+                    <label for="layer-select">layer:</label>
+                    <select id="layer-select"></select>
+                    <label for="connection-select">connection:</label>
+                    <select id="connection-select"></select>
+                </div>
+            </div>
+            <div class="visualization-container">
+                <div id="spline-plot"></div>
+                <div id="spline-info">
+                    <h3>function details</h3>
+                    <div id="function-equation"></div>
+                    <div id="function-stats"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- inference panel -->
+        <section id="inference-panel" class="panel">
+            <div class="panel-header">
+                <h2>live inference</h2>
+                <p>adjust inputs and see how data flows through the network</p>
+            </div>
+            <div class="visualization-container">
+                <div class="input-controls">
+                    <h3>inputs</h3>
+                    <div id="input-sliders"></div>
+                    <div class="input-values">
+                        <strong>current input:</strong> <span id="current-input">[0]</span>
+                    </div>
+                </div>
+                <div class="inference-visualization">
+                    <div id="inference-network"></div>
+                    <div class="output-display">
+                        <h3>output</h3>
+                        <div id="current-output">0.000</div>
+                        <div id="target-output">target: 0.000</div>
+                    </div>
+                </div>
+                <div class="activation-flow">
+                    <h3>activation flow</h3>
+                    <div id="activation-plot"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- training history panel -->
+        <section id="training-panel" class="panel">
+            <div class="panel-header">
+                <h2>training progress</h2>
+                <p>how the model learned over time</p>
+            </div>
+            <div class="visualization-container">
+                <div id="training-plots"></div>
+                <div id="training-stats">
+                    <h3>training statistics</h3>
+                    <div id="stats-content"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>
+                built with ❤️ using d3.js and plotly | 
+                <a href="https://github.com/mottopanikeiku/kan-visualizer" target="_blank">view source</a> |
+                learn more about <a href="https://arxiv.org/abs/2404.19756" target="_blank">kolmogorov-arnold networks</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- loading overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>loading kan models...</p>
+    </div>
+
+    <!-- scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/network-visualization.js"></script>
+    <script src="js/spline-visualization.js"></script>
+    <script src="js/inference-engine.js"></script>
+    <script src="js/training-visualization.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
