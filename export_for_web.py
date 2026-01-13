@@ -36,30 +36,27 @@ def export_kan_for_visualization(model, trainer=None, save_path="web/data/model.
             layer.eval()
             for out_idx in range(layer.out_features):
                 for in_idx in range(layer.in_features):
-                                         # evaluate this specific spline function - skip for now
-                     pass
+                    # get individual spline evaluations
+                    individual_evaluations = []
+                    for x_val in x_fine:
+                        x_input = torch.zeros(1, layer.in_features)
+                        x_input[0, in_idx] = x_val
+                        
+                        # simplified evaluation - just use spline coefficients directly
+                        value = 0.0
+                        if len(layer.spline_weight[out_idx, in_idx]) > 0:
+                            # use middle coefficient as approximation
+                            mid_idx = len(layer.spline_weight[out_idx, in_idx]) // 2
+                            value = float(layer.spline_weight[out_idx, in_idx, mid_idx]) * float(x_val)
+                        
+                        individual_evaluations.append(value)
                     
-                                         # get individual spline evaluations
-                     individual_evaluations = []
-                     for x_val in x_fine:
-                         x_input = torch.zeros(1, layer.in_features)
-                         x_input[0, in_idx] = x_val
-                         
-                         # simplified evaluation - just use spline coefficients directly
-                         value = 0.0
-                         if len(layer.spline_weight[out_idx, in_idx]) > 0:
-                             # use middle coefficient as approximation
-                             mid_idx = len(layer.spline_weight[out_idx, in_idx]) // 2
-                             value = float(layer.spline_weight[out_idx, in_idx, mid_idx]) * float(x_val)
-                         
-                         individual_evaluations.append(value)
-                     
-                     spline_evaluations.append({
-                         'input_idx': in_idx,
-                         'output_idx': out_idx,
-                         'x_values': x_fine.tolist(),
-                         'y_values': individual_evaluations
-                     })
+                    spline_evaluations.append({
+                        'input_idx': in_idx,
+                        'output_idx': out_idx,
+                        'x_values': x_fine.tolist(),
+                        'y_values': individual_evaluations
+                    })
         
         layer_data = {
             'layer_index': i,
