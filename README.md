@@ -106,12 +106,33 @@ kans are based on the kolmogorov-arnold representation theorem, which says any m
 
 ```
 kan-visualizer/
-├── kan_layer.py      # core kan layer implementation
-├── kan_network.py    # kan network and multi-layer variants
-├── kan_trainer.py    # training framework and utilities
-├── examples.py       # usage examples and demonstrations
-├── requirements.txt  # python dependencies
-└── README.md        # this file
+├── kan_layer.py       # core kan layer with spline functions
+├── kan_network.py     # kan network and multi-layer variants
+├── kan_trainer.py     # training framework and utilities
+├── examples.py        # usage examples and demonstrations
+├── export_for_web.py  # export trained models to json for web viz
+├── test_kan.py        # test suite for kan implementation
+├── requirements.txt   # python dependencies
+├── README.md          # this file
+├── GUIDE.md           # comprehensive kan theory and usage guide
+├── LICENSE            # mit license
+└── web/               # interactive web visualization
+    ├── index.html     # main application page
+    ├── server.py      # simple http server for local dev
+    ├── styles/        # css stylesheets
+    │   └── main.css   # premium design system
+    ├── js/            # javascript modules
+    │   ├── main.js              # application controller
+    │   ├── network-visualization.js  # d3.js network graph
+    │   ├── spline-visualization.js   # plotly spline plots
+    │   ├── inference-engine.js       # live inference demo
+    │   ├── training-visualization.js # training progress charts
+    │   └── utils.js             # utility functions
+    └── data/          # pre-trained model exports
+        ├── model_1d.json
+        ├── model_2d.json
+        ├── model_complex.json
+        └── datasets.json
 ```
 
 ## requirements
