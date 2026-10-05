@@ -1,0 +1,17 @@
+{
+  "device": "local CPU",
+  "paid_compute_cost_usd": 0,
+  "python_version": "3.13.15",
+  "torch_version": "2.14.1+cpu",
+  "node_version": "v22.23.1",
+  "thread_limit": 1,
+  "nice_priority": 19,
+  "demo_training_wall_seconds": 11.77,
+  "demo_training_max_rss_kib": 363416,
+  "passing_tests_wall_seconds": 3.15,
+  "passing_tests_max_rss_kib": 340384,
+  "measurement_tool": "/usr/bin/time -v",
+  "training_command": "nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python export_for_web.py",
+  "test_command": "nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLBACKEND=Agg .venv/bin/python test_kan.py --report results/verification.json",
+  "initial_test_failure": "The new bundled-model check exposed a Node test assertion that assumed every first model had two inputs. Fixed the assertion to derive valid dimensions from metadata; the final run passed all 14 tests."
+}

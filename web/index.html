@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Interactive visualization of Kolmogorov-Arnold Networks (KANs) - explore learnable spline functions on network edges with live inference and training analysis.">
+    <meta name="description" content="Explore Gaussian radial basis edge functions in a small Kolmogorov-Arnold network, with model inference and recorded training losses.">
     <meta name="theme-color" content="#667eea">
     <title>KAN Visualizer - Kolmogorov-Arnold Networks</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
     <header>
         <div class="container">
             <h1>🧠 kolmogorov-arnold networks</h1>
-            <p>interactive visualization of learnable functions on network edges</p>
+            <p>interactive visualization of Gaussian RBF functions on network edges</p>
         </div>
     </header>
 
@@ -26,9 +26,9 @@
             <div class="control-group">
                 <label for="model-select">model:</label>
                 <select id="model-select">
-                    <option value="model_1d">1d function (simple)</option>
-                    <option value="model_2d">2d function (medium)</option>
-                    <option value="model_complex">complex network (deep)</option>
+                    <option value="model_1d">1d sine wave</option>
+                    <option value="model_2d">2d Gaussian wave</option>
+                    <option value="model_complex">2d sin(x·y) + 0.5 tanh(x−y)</option>
                 </select>
             </div>
             
@@ -36,14 +36,14 @@
                 <label for="visualization-mode">view:</label>
                 <select id="visualization-mode">
                     <option value="network">network graph</option>
-                    <option value="splines">spline functions</option>
+                    <option value="splines">Gaussian RBF edge functions</option>
                     <option value="inference">live inference</option>
                     <option value="training">training history</option>
                 </select>
             </div>
             
             <div class="control-group">
-                <button id="play-button" class="play-btn">▶ animate data flow</button>
+                <button id="play-button" class="play-btn">▶ illustrate connectivity</button>
             </div>
         </div>
     </nav>
@@ -55,6 +55,7 @@
                 <h2>network architecture</h2>
                 <div class="info">
                     <span id="network-info">loading...</span>
+                    <p>edge width and opacity: relative RMS of full exported edge samples, not feature importance. moving particles illustrate connectivity only.</p>
                 </div>
             </div>
             <div class="visualization-container">
@@ -62,7 +63,7 @@
                 <div id="network-sidebar">
                     <div id="layer-details">
                         <h3>layer details</h3>
-                        <div id="layer-info">select a layer to see details</div>
+                        <div id="layer-info">select a node to see details</div>
                     </div>
                     <div id="edge-details">
                         <h3>edge function</h3>
@@ -72,10 +73,10 @@
             </div>
         </section>
 
-        <!-- spline visualization panel -->
+        <!-- Gaussian RBF edge visualization panel -->
         <section id="splines-panel" class="panel">
             <div class="panel-header">
-                <h2>learnable spline functions</h2>
+                <h2>learnable Gaussian RBF edge functions</h2>
                 <div class="controls">
                     <label for="layer-select">layer:</label>
                     <select id="layer-select"></select>
@@ -97,7 +98,7 @@
         <section id="inference-panel" class="panel">
             <div class="panel-header">
                 <h2>live inference</h2>
-                <p>adjust inputs and see how data flows through the network</p>
+                <p>node labels are actual activations; node size scales with |activation|. edge width and opacity scale with |full edge contribution| at the current input; blue is nonnegative and red is negative.</p>
             </div>
             <div class="visualization-container">
                 <div class="input-controls">
@@ -116,7 +117,7 @@
                     </div>
                 </div>
                 <div class="activation-flow">
-                    <h3>activation flow</h3>
+                    <h3>mean absolute actual activation</h3>
                     <div id="activation-plot"></div>
                 </div>
             </div>
@@ -126,7 +127,7 @@
         <section id="training-panel" class="panel">
             <div class="panel-header">
                 <h2>training progress</h2>
-                <p>how the model learned over time</p>
+                <p>recorded training loss by epoch; validation loss is shown only when exported</p>
             </div>
             <div class="visualization-container">
                 <div id="training-plots"></div>
@@ -156,6 +157,7 @@
 
     <!-- scripts -->
     <script src="js/utils.js"></script>
+    <script src="js/model-forward.js"></script>
     <script src="js/network-visualization.js"></script>
     <script src="js/spline-visualization.js"></script>
     <script src="js/inference-engine.js"></script>
