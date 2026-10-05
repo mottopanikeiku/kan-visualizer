@@ -16,21 +16,21 @@ class Utils {
         return d3.interpolate(c1, c2)(factor);
     }
     
-    // evaluate simplified spline function
-    static evaluateSpline(gridPoints, coefficients, x) {
-        // clamp x to grid range
-        x = Math.max(gridPoints[0], Math.min(gridPoints[gridPoints.length - 1], x));
-        
-        // find interval
-        let i = 0;
-        while (i < gridPoints.length - 1 && x > gridPoints[i + 1]) {
-            i++;
+    // Exported samples contain the full edge contribution, including both scales.
+    static edgeSamples(layer, inputIdx, outputIdx) {
+        const data = layer.edge_evaluations && layer.edge_evaluations.find(
+            entry => entry.input_idx === inputIdx && entry.output_idx === outputIdx
+        );
+        if (!data || !Array.isArray(data.x_values) || !Array.isArray(data.y_values) ||
+            data.x_values.length < 2 || data.x_values.length !== data.y_values.length ||
+            !data.x_values.every(Number.isFinite) || !data.y_values.every(Number.isFinite)) {
+            throw new Error(`Missing or invalid full edge samples: input ${inputIdx}, output ${outputIdx}`);
         }
-        
-        // linear interpolation for simplicity
-        if (i >= coefficients.length - 1) i = coefficients.length - 2;
-        const t = (x - gridPoints[i]) / (gridPoints[i + 1] - gridPoints[i]);
-        return coefficients[i] * (1 - t) + coefficients[i + 1] * t;
+        return data;
+    }
+
+    static sampleRms(values) {
+        return Math.sqrt(values.reduce((sum, value) => sum + value * value, 0) / values.length);
     }
     
     // create svg gradients
@@ -189,7 +189,7 @@ class Utils {
         });
     }
     
-    // generate random data for testing
+    // generate evenly spaced function samples
     static generateTestData(func, xRange, nPoints) {
         const data = { x: [], y: [] };
         for (let i = 0; i < nPoints; i++) {
@@ -294,7 +294,7 @@ Utils.showHelp = function() {
         <h3>navigation</h3>
         <ul>
             <li><strong>network view:</strong> explore the overall architecture</li>
-            <li><strong>splines view:</strong> examine individual learned functions</li>
+            <li><strong>edge functions view:</strong> examine learned Gaussian RBF edge functions</li>
             <li><strong>inference view:</strong> test the model with live inputs</li>
             <li><strong>training view:</strong> analyze learning progress</li>
         </ul>
@@ -304,7 +304,7 @@ Utils.showHelp = function() {
             <li><strong>click nodes/edges:</strong> show detailed information</li>
             <li><strong>hover elements:</strong> highlight connections</li>
             <li><strong>drag sliders:</strong> change input values in real-time</li>
-            <li><strong>play button:</strong> animate data flow</li>
+            <li><strong>play button:</strong> show an illustrative graph path or sweep inference inputs</li>
         </ul>
         
         <h3>keyboard shortcuts</h3>
@@ -314,9 +314,9 @@ Utils.showHelp = function() {
         </ul>
         
         <h3>understanding kans</h3>
-        <p>kolmogorov-arnold networks replace linear weights with learnable spline functions. 
-        each edge represents a univariate function that the network learns to approximate 
-        complex multivariate functions.</p>
+        <p>this model learns a univariate function on each edge: a scaled base activation
+        plus a weighted sum of Gaussian radial basis functions. each node sums its
+        incoming edge contributions.</p>
         
         <button onclick="this.parentElement.remove()" 
                 style="margin-top: 20px; padding: 10px 20px; background: #667eea; 

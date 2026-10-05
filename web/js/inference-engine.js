@@ -9,6 +9,7 @@ class InferenceEngine {
     }
     
     render(model, dataset) {
+        this.stopAnimation();
         console.log('rendering inference engine...');
         
         this.model = model;
@@ -90,6 +91,7 @@ class InferenceEngine {
                 
                 svg.append('circle')
                     .attr('class', `inference-node layer-${layerIdx}`)
+                    .datum({ layer: layerIdx, index: nodeIdx })
                     .attr('cx', x)
                     .attr('cy', y)
                     .attr('r', 8)
@@ -123,13 +125,15 @@ class InferenceEngine {
                     
                     svg.append('line')
                         .attr('class', `inference-edge edge-${layerIdx}-${i}-${j}`)
+                        .datum({ layer: layerIdx, input: i, output: j })
                         .attr('x1', x1)
                         .attr('y1', y1)
                         .attr('x2', x2)
                         .attr('y2', y2)
                         .attr('stroke', '#ddd')
                         .attr('stroke-width', 1)
-                        .attr('opacity', 0.6);
+                        .attr('opacity', 0.6)
+                        .append('title');
                 }
             }
         }
@@ -142,201 +146,83 @@ class InferenceEngine {
     }
     
     updatePrediction() {
-        // update input display
-        document.getElementById('current-input').textContent = 
+        document.getElementById('current-input').textContent =
             `[${this.currentInput.map(x => x.toFixed(1)).join(', ')}]`;
-        
-        // compute prediction using simplified forward pass
-        const prediction = this.forwardPass(this.currentInput);
-        this.currentOutput = prediction;
-        
-        // update output display
-        document.getElementById('current-output').textContent = prediction.toFixed(3);
-        
-        // compute target value if dataset available
-        if (this.dataset && this.dataset.function) {
-            this.targetOutput = this.computeTargetOutput();
-            document.getElementById('target-output').textContent = 
-                `target: ${this.targetOutput.toFixed(3)}`;
-        }
-        
-        // update network activations
+        this.evaluation = this.forwardPass(this.currentInput);
+        this.currentOutput = this.evaluation.output[0];
+        document.getElementById('current-output').textContent =
+            this.evaluation.output.map(value => value.toFixed(3)).join(', ');
+        this.targetOutput = this.computeTargetOutput();
+        document.getElementById('target-output').textContent =
+            `target (${this.model.metadata.target_id}): ${this.targetOutput.toFixed(3)}`;
         this.updateNetworkActivations();
-        
-        // update activation flow plot
         this.updateActivationFlow();
     }
-    
+
     forwardPass(input) {
-        let x = [...input];
-        
-        // simplified forward pass through each layer
-        for (let layerIdx = 0; layerIdx < this.model.layers.length; layerIdx++) {
-            const layer = this.model.layers[layerIdx];
-            const nextX = new Array(layer.output_features).fill(0);
-            
-            for (let outIdx = 0; outIdx < layer.output_features; outIdx++) {
-                let sum = 0;
-                
-                for (let inIdx = 0; inIdx < layer.input_features; inIdx++) {
-                    // simplified spline evaluation
-                    const splineValue = this.evaluateSpline(
-                        layer.grid_points,
-                        layer.spline_coefficients[outIdx][inIdx],
-                        x[inIdx]
-                    );
-                    
-                    // base linear transformation
-                    const baseValue = x[inIdx] * layer.base_weights[outIdx][inIdx];
-                    
-                    // combine with scaling factors
-                    sum += layer.scale_base * baseValue + layer.scale_spline * splineValue;
-                }
-                
-                nextX[outIdx] = sum;
-            }
-            
-            x = nextX;
-        }
-        
-        return x[0]; // assuming single output
+        return KANForward.forward(this.model, input);
     }
-    
-    evaluateSpline(gridPoints, coefficients, x) {
-        // simplified spline evaluation
-        x = Math.max(gridPoints[0], Math.min(gridPoints[gridPoints.length - 1], x));
-        
-        // find interval
-        let i = 0;
-        while (i < gridPoints.length - 1 && x > gridPoints[i + 1]) {
-            i++;
-        }
-        
-        // linear interpolation for simplicity
-        if (i >= coefficients.length - 1) i = coefficients.length - 2;
-        const t = (x - gridPoints[i]) / (gridPoints[i + 1] - gridPoints[i]);
-        return coefficients[i] * (1 - t) + coefficients[i + 1] * t;
-    }
-    
+
     computeTargetOutput() {
-        if (!this.dataset || !this.dataset.function) return 0;
-        
-        // evaluate mathematical function safely
-        try {
-            if (this.currentInput.length === 1) {
-                const x = this.currentInput[0];
-                // For sine wave: Math.sin(3*x) + 0.3*Math.cos(10*x)
-                return Math.sin(3*x) + 0.3*Math.cos(10*x);
-            } else if (this.currentInput.length === 2) {
-                const x = this.currentInput[0];
-                const y = this.currentInput[1];
-                // For 2D function: x^2 + y^2
-                return x*x + y*y;
-            }
-        } catch (e) {
-            console.warn('error evaluating target function:', e);
-            return 0;
-        }
-        
-        return 0;
+        return KANForward.targetValue(this.model.metadata.target_id, this.currentInput);
     }
-    
+
     updateNetworkActivations() {
-        // update activation values displayed on nodes
-        let x = [...this.currentInput];
-        
-        // update input nodes
-        for (let i = 0; i < x.length; i++) {
-            d3.select(`.node-0-${i}`)
-                .text(x[i].toFixed(1));
-        }
-        
-        // forward pass with intermediate activations
-        for (let layerIdx = 0; layerIdx < this.model.layers.length; layerIdx++) {
-            const layer = this.model.layers[layerIdx];
-            const nextX = new Array(layer.output_features).fill(0);
-            
-            for (let outIdx = 0; outIdx < layer.output_features; outIdx++) {
-                let sum = 0;
-                
-                for (let inIdx = 0; inIdx < layer.input_features; inIdx++) {
-                    const splineValue = this.evaluateSpline(
-                        layer.grid_points,
-                        layer.spline_coefficients[outIdx][inIdx],
-                        x[inIdx]
-                    );
-                    const baseValue = x[inIdx] * layer.base_weights[outIdx][inIdx];
-                    sum += layer.scale_base * baseValue + layer.scale_spline * splineValue;
-                }
-                
-                nextX[outIdx] = sum;
-                
-                // update node display
-                d3.select(`.node-${layerIdx + 1}-${outIdx}`)
-                    .text(sum.toFixed(1));
-            }
-            
-            x = nextX;
-        }
-        
-        // highlight active connections based on activation strength
+        this.evaluation.activations.forEach((values, layer) => {
+            values.forEach((value, index) => {
+                d3.select(`#inference-svg .node-${layer}-${index}`).text(value.toFixed(3));
+            });
+        });
+        const magnitude = Math.max(...this.evaluation.activations.flat().map(Math.abs), 1e-12);
+        d3.select('#inference-svg').selectAll('.inference-node')
+            .attr('r', node => 6 + 4 * Math.abs(this.evaluation.activations[node.layer][node.index]) / magnitude);
         this.highlightActiveConnections();
     }
-    
+
     highlightActiveConnections() {
-        // update edge opacity based on activation strength
-        d3.selectAll('.inference-edge')
-            .attr('opacity', d => {
-                // compute activation strength for this edge
-                return Math.min(1, Math.max(0.1, Math.abs(Math.random()) * 0.8));
-            })
-            .attr('stroke-width', d => {
-                return Math.random() > 0.5 ? 2 : 1;
-            });
+        const magnitude = Math.max(...this.evaluation.edges.flat(2).map(Math.abs), 1e-12);
+        const value = edge => this.evaluation.edges[edge.layer][edge.output][edge.input];
+        const edges = d3.select('#inference-svg').selectAll('.inference-edge');
+        edges.attr('opacity', edge => 0.1 + 0.9 * Math.abs(value(edge)) / magnitude)
+            .attr('stroke-width', edge => 1 + 3 * Math.abs(value(edge)) / magnitude)
+            .attr('stroke', edge => value(edge) < 0 ? '#ff6b6b' : '#667eea');
+        edges.select('title').text(edge =>
+            `layer ${edge.layer + 1}, input ${edge.input} → output ${edge.output}: full contribution ${value(edge).toFixed(6)}`
+        );
     }
-    
+
     updateActivationFlow() {
-        // create activation flow visualization
         const plotData = {
-            x: [],
-            y: [],
+            x: this.evaluation.activations.map((_, layer) => layer === 0 ? 'input' : `layer ${layer}`),
+            y: this.evaluation.activations.map(values =>
+                values.reduce((sum, value) => sum + Math.abs(value), 0) / values.length),
             type: 'scatter',
             mode: 'lines+markers',
             line: { color: '#667eea', width: 3 },
             marker: { size: 8, color: '#ff6b6b' }
         };
-        
-        // add current activations from each layer
-        const architecture = this.model.metadata.architecture;
-        for (let i = 0; i < architecture.length; i++) {
-            plotData.x.push(i);
-            plotData.y.push(Math.random() * 2 - 1); // simplified activation
-        }
-        
-        const layout = {
-            title: 'activation magnitude by layer',
-            xaxis: { title: 'layer' },
-            yaxis: { title: 'activation' },
-            margin: { t: 40, r: 20, b: 40, l: 40 },
+        Plotly.newPlot('activation-plot', [plotData], {
+            title: 'mean absolute actual activation by layer',
+            xaxis: { title: 'input / layer' },
+            yaxis: { title: 'mean |activation|' },
+            margin: { t: 40, r: 20, b: 40, l: 50 },
             height: 200,
             showlegend: false
-        };
-        
-        Plotly.newPlot('activation-plot', [plotData], layout, {
-            displayModeBar: false,
-            responsive: true
-        });
+        }, { displayModeBar: false, responsive: true });
     }
     
     startAnimation() {
         console.log('starting inference animation...');
+        this.stopAnimation();
+        let tick = 0;
         
         // animate input sliders automatically
         const sliders = document.querySelectorAll('#input-sliders input[type="range"]');
         
         this.animationInterval = setInterval(() => {
+            tick++;
             sliders.forEach((slider, i) => {
-                const newValue = Math.sin(Date.now() / 1000 + i) * 1.5;
+                const newValue = Math.round(Math.sin(tick / 10 + i) * 15) / 10;
                 slider.value = newValue;
                 this.currentInput[i] = newValue;
                 

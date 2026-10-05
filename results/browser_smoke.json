@@ -1,0 +1,75 @@
+{
+  "cases": [
+    {
+      "model": "model_1d",
+      "view": "network",
+      "status": "passed"
+    },
+    {
+      "model": "model_1d",
+      "view": "splines",
+      "status": "passed"
+    },
+    {
+      "model": "model_1d",
+      "view": "inference",
+      "status": "passed"
+    },
+    {
+      "model": "model_1d",
+      "view": "training",
+      "status": "passed"
+    },
+    {
+      "model": "model_2d",
+      "view": "network",
+      "status": "passed"
+    },
+    {
+      "model": "model_2d",
+      "view": "splines",
+      "status": "passed"
+    },
+    {
+      "model": "model_2d",
+      "view": "inference",
+      "status": "passed"
+    },
+    {
+      "model": "model_2d",
+      "view": "training",
+      "status": "passed"
+    },
+    {
+      "model": "model_complex",
+      "view": "network",
+      "status": "passed"
+    },
+    {
+      "model": "model_complex",
+      "view": "splines",
+      "status": "passed"
+    },
+    {
+      "model": "model_complex",
+      "view": "inference",
+      "status": "passed"
+    },
+    {
+      "model": "model_complex",
+      "view": "training",
+      "status": "passed"
+    }
+  ],
+  "all_passed": true,
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+  "runtime_errors": [],
+  "checks": [
+    "all three models and four views",
+    "full exported edge curves in both edge views",
+    "slider-driven output and task-specific target",
+    "actual per-layer mean absolute activations",
+    "signed edge tooltips",
+    "inference animation stops on view change"
+  ]
+}
