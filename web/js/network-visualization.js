@@ -12,6 +12,10 @@ class NetworkVisualization {
 
     render(model) {
         console.log('rendering network visualization...');
+        this.stopAnimation();
+        this.model = model;
+        document.getElementById('edge-details').innerHTML = '<h3>edge function</h3><p>select an edge to see its full sampled function</p>';
+        document.getElementById('layer-info').textContent = 'select a node to see details';
 
         // clear previous
         d3.select('#network-svg').selectAll('*').remove();
@@ -86,14 +90,8 @@ class NetworkVisualization {
     }
 
     getEdgeWeight(model, layerIdx, sourceIdx, targetIdx) {
-        // get the spline weight magnitude for this connection
-        const layer = model.layers[layerIdx];
-        const splineCoeffs = layer.spline_coefficients[targetIdx][sourceIdx];
-        const baseWeight = layer.base_weights[targetIdx][sourceIdx];
-
-        // combine spline and base weights
-        const splineNorm = Math.sqrt(splineCoeffs.reduce((sum, c) => sum + c * c, 0));
-        return Math.abs(baseWeight) + splineNorm;
+        const data = Utils.edgeSamples(model.layers[layerIdx], sourceIdx, targetIdx);
+        return Utils.sampleRms(data.y_values);
     }
 
     drawNetwork() {
@@ -265,18 +263,15 @@ class NetworkVisualization {
     showEdgeDetails(edge) {
         const detailsDiv = document.getElementById('edge-details');
 
-        // get spline data for this edge
-        const splineData = this.getSplineDataForEdge(edge);
-
+        const data = this.getSplineDataForEdge(edge);
         detailsDiv.innerHTML = `
-            <h3>edge function</h3>
+            <h3>Gaussian RBF edge function</h3>
             <p><strong>connection:</strong> layer ${edge.layerIdx + 1}, input ${edge.sourceIdx} → output ${edge.targetIdx}</p>
-            <p><strong>weight magnitude:</strong> ${edge.weight.toFixed(4)}</p>
+            <p><strong>sampled full-edge RMS:</strong> ${edge.weight.toFixed(4)}</p>
+            <p>${data.y_values.length} samples on [${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}]; includes the scaled base activation and RBF branch. not feature importance.</p>
             <div id="edge-spline-plot" style="height: 200px; margin-top: 10px;"></div>
         `;
-
-        // plot spline function
-        this.plotEdgeSpline(splineData, 'edge-spline-plot');
+        this.plotEdgeSpline(data, 'edge-spline-plot');
     }
 
     showNodeDetails(node) {
@@ -292,19 +287,7 @@ class NetworkVisualization {
     }
 
     getSplineDataForEdge(edge) {
-        // this would get the actual spline evaluation data
-        // for now, return mock data
-        const x_values = [];
-        const y_values = [];
-
-        for (let i = 0; i < 100; i++) {
-            const x = -2 + (4 * i / 99);
-            const y = Math.sin(edge.weight * x) * Math.exp(-x * x / 4);
-            x_values.push(x);
-            y_values.push(y);
-        }
-
-        return { x_values, y_values };
+        return Utils.edgeSamples(this.model.layers[edge.layerIdx], edge.sourceIdx, edge.targetIdx);
     }
 
     plotEdgeSpline(data, containerId) {
@@ -317,13 +300,13 @@ class NetworkVisualization {
                 color: '#667eea',
                 width: 3
             },
-            name: 'spline function'
+            name: 'full edge contribution'
         };
 
         const layout = {
             margin: { t: 20, r: 20, b: 40, l: 40 },
             xaxis: { title: 'input' },
-            yaxis: { title: 'output' },
+            yaxis: { title: 'edge contribution' },
             showlegend: false,
             height: 200
         };
@@ -335,86 +318,31 @@ class NetworkVisualization {
     }
 
     startAnimation() {
-        console.log('starting network animation...');
-
-        const animateDataFlow = () => {
-            // Get layers for organized flow
-            const architecture = this.nodes.reduce((acc, node) => {
-                if (!acc[node.layer]) acc[node.layer] = [];
-                acc[node.layer].push(node);
-                return acc;
-            }, {});
-
-            const layers = Object.keys(architecture).sort((a, b) => a - b).map(k => architecture[k]);
-
-            // Random starting input node
-            const startNode = layers[0][Math.floor(Math.random() * layers[0].length)];
-
-            // Create glowing particle group
-            const particleGroup = this.svg.append('g').attr('class', 'data-particle-group');
-
-            // Outer glow
-            particleGroup.append('circle')
-                .attr('class', 'particle-glow')
-                .attr('r', 12)
-                .attr('fill', 'rgba(255, 107, 107, 0.3)')
-                .attr('cx', startNode.x)
-                .attr('cy', startNode.y);
-
-            // Core particle
-            particleGroup.append('circle')
+        this.stopAnimation();
+        let pathIndex = 0;
+        const layerCount = this.model.metadata.architecture.length;
+        const animatePath = () => {
+            // Deterministic illustration of connectivity, not an activation measurement.
+            const path = Array.from({ length: layerCount }, (_, layer) => {
+                const nodes = this.nodes.filter(node => node.layer === layer);
+                return nodes[(pathIndex + layer) % nodes.length];
+            });
+            pathIndex++;
+            const particle = this.svg.append('circle')
                 .attr('class', 'data-particle')
                 .attr('r', 5)
                 .attr('fill', '#ff6b6b')
-                .attr('cx', startNode.x)
-                .attr('cy', startNode.y)
-                .style('filter', 'drop-shadow(0 0 6px #ff6b6b)');
-
-            // Animate through all layers
-            let currentLayer = 0;
-
-            const animateToNextLayer = () => {
-                currentLayer++;
-
-                if (currentLayer >= layers.length) {
-                    // Fade out and remove
-                    particleGroup.transition()
-                        .duration(300)
-                        .style('opacity', 0)
-                        .remove();
-                    return;
-                }
-
-                // Pick random target in next layer
-                const targetNode = layers[currentLayer][Math.floor(Math.random() * layers[currentLayer].length)];
-
-                // Change color based on layer progression
-                const layerColors = ['#ff6b6b', '#4ecdc4', '#667eea', '#764ba2'];
-                const newColor = layerColors[Math.min(currentLayer, layerColors.length - 1)];
-
-                // Animate to target
-                particleGroup.selectAll('circle')
-                    .transition()
-                    .duration(500)
-                    .ease(d3.easeCubicInOut)
-                    .attr('cx', targetNode.x)
-                    .attr('cy', targetNode.y)
-                    .on('end', function () {
-                        // Update particle color on the main particle only
-                        d3.select(this.parentNode).select('.data-particle')
-                            .attr('fill', newColor)
-                            .style('filter', `drop-shadow(0 0 6px ${newColor})`);
-
-                        setTimeout(animateToNextLayer, 150);
-                    });
-            };
-
-            setTimeout(animateToNextLayer, 200);
+                .attr('cx', path[0].x)
+                .attr('cy', path[0].y);
+            let transition = particle.transition();
+            for (let layer = 1; layer < path.length; layer++) {
+                transition = transition.duration(500).ease(d3.easeCubicInOut)
+                    .attr('cx', path[layer].x).attr('cy', path[layer].y).transition();
+            }
+            transition.duration(200).attr('opacity', 0).remove();
         };
-
-        // Start animation loop  
-        this.animation = setInterval(animateDataFlow, 2000);
-        animateDataFlow(); // start immediately
+        this.animation = setInterval(animatePath, layerCount * 500 + 500);
+        animatePath();
     }
 
     stopAnimation() {
@@ -423,9 +351,9 @@ class NetworkVisualization {
             this.animation = null;
         }
 
-        // Remove any existing particles
-        this.svg.selectAll('.data-particle-group').remove();
-        this.svg.selectAll('.data-particle').remove();
+        if (this.svg) {
+            this.svg.selectAll('.data-particle').interrupt().remove();
+        }
 
         console.log('network animation stopped');
     }

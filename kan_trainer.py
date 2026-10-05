@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-import numpy as np
-import matplotlib.pyplot as plt
 from typing import Optional, Tuple, Dict, Any, Callable
 from tqdm import tqdm
 import os
@@ -89,6 +87,8 @@ class KANTrainer:
         """
         x = torch.rand(n_samples, input_dim) * (x_range[1] - x_range[0]) + x_range[0]
         y = func(x)
+        if y.ndim == 1:
+            y = y.unsqueeze(1)
         
         if noise_level > 0:
             y += torch.randn_like(y) * noise_level
@@ -259,6 +259,8 @@ class KANTrainer:
         Args:
             save_path: Path to save the plot
         """
+        import matplotlib.pyplot as plt
+
         fig, axes = plt.subplots(1, 2, figsize=(12, 4))
         
         # Loss plot

@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 import matplotlib.pyplot as plt
 from kan_network import KAN
 from kan_trainer import KANTrainer

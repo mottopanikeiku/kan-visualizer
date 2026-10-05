@@ -1,155 +1,47 @@
-# kolmogorov-arnold networks (kan) implementation
+# KAN visualizer
 
-a pytorch implementation of kans, which replace boring linear layers with learnable functions on network edges.
+This is a small PyTorch Gaussian edge-network experiment with a browser viewer, inspired by [Liu et al.'s KAN paper](https://arxiv.org/abs/2404.19756), not its B-spline implementation.
 
-## overview
+**Question:** can the browser show the functions and activations that the trained Python network actually computes?
 
-traditional neural networks use linear transformations + fixed activations. kans put learnable functions on the edges instead, making them more interpretable and potentially way more efficient.
+[kan_layer.py](kan_layer.py) learns Gaussian radial basis functions (RBFs) plus a base activation on each edge, with scaling applied before summing inputs. [export_for_web.py](export_for_web.py) exports the full model and sampled edge curves; [model-forward.js](web/js/model-forward.js) evaluates those parameters directly. Live inference shows real node activations, signed edge contributions, and the correct target for each task.
 
-## features
+## Result
 
-- **core kan layer**: learnable functions using spline interpolation
-- **flexible architecture**: multi-layer kans with configurable params
-- **training framework**: complete training pipeline with reg
-- **visualization**: built-in plotting for training history and results  
-- **examples**: comprehensive examples for 1d/2d function approximation
+Python/Node parity passes at absolute and relative tolerance `1e-6`: maximum output error for the bundled float32 models is `6.48e-7`. A seeded toy `x²` task reduces MSE from `0.220325` to `0.000302613` in `160` CPU optimizer steps. All `14` tests pass; see [verification.json](results/verification.json). [Browser smoke checks](results/browser_smoke.json) passed across all models and views without runtime errors.
 
-## installation
+Regenerated synthetic demos give these MSEs on separate fixed evaluation grids, not on the training samples ([settings and results](results/demo_training.json)):
 
-```bash
-pip install -r requirements.txt
-```
+| Target | Initial MSE | Trained MSE |
+| --- | ---: | ---: |
+| `sin(3x) + 0.3 cos(10x)` | 0.563881 | 0.031081 |
+| `sin(x) exp(-y²)` | 0.202277 | 0.002112 |
+| `sin(xy) + 0.5 tanh(x-y)` | 0.599373 | 0.019927 |
 
-## quick start
+These results establish numerical agreement and small-task learning, not superiority over an MLP.
 
-```python
-import torch
-from kan_network import KAN
-from kan_trainer import KANTrainer
+## Reproduce
 
-# create a kan model
-model = KAN(
-    layers_hidden=[2, 10, 1],  # input_dim=2, hidden=10, output_dim=1
-    grid_size=5,               # number of grid points for splines
-    spline_order=3             # spline order (3 for cubic)
-)
-
-# create trainer
-trainer = KANTrainer(model, optimizer_name="Adam", lr=0.01)
-
-# generate synthetic data
-def target_func(x):
-    return torch.sin(x[:, 0:1]) * torch.cos(x[:, 1:2])
-
-x_train, y_train = trainer.create_dataset(
-    func=target_func, 
-    n_samples=1000, 
-    input_dim=2
-)
-
-# train the model
-trainer.train(x_train, y_train, epochs=100, batch_size=64)
-
-# make predictions
-predictions = trainer.predict(x_test)
-```
-
-## architecture
-
-### kan layer
-- replaces linear layers with learnable spline functions
-- each edge has its own little function parameterized by splines
-- combines base activation + spline activation for flexibility
-
-### kan network
-- stacks multiple kan layers
-- supports arbitrary depth and width
-- built-in regularization for sparsity and smoothness
-
-### training framework
-- support for multiple optimizers (adam, adamw, lbfgs)
-- automatic regularization with configurable weights
-- built-in validation and early stopping
-- training history tracking and visualization
-
-## key parameters
-
-- `grid_size`: number of grid points for spline interpolation (higher = more flexible)
-- `spline_order`: spline order (typically 3 for cubic splines)
-- `scale_base`: weight for base activation component
-- `scale_spline`: weight for spline activation component
-- `regularize_activation`: l1 regularization on spline weights
-- `regularize_entropy`: entropy regularization for sparsity
-
-## examples
-
-run the examples to see kan in action:
+Requires Python, `uv`, Node, and a browser. CPU only; no GPU or paid service. The local training run took about `12` seconds and peaked at `355` MiB resident memory; tests took about `3` seconds ([runtime measurements](results/runtime.json)). The browser loads plotting libraries from public CDNs, so viewing needs internet access.
 
 ```bash
-python examples.py
+uv venv && uv pip install --python .venv/bin/python torch==2.14.1+cpu --index-url https://download.pytorch.org/whl/cpu && uv pip install --python .venv/bin/python -r requirements.txt
+nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python export_for_web.py && nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python test_kan.py --report results/verification.json
+nice -n 19 .venv/bin/python -m http.server 8002 --bind 127.0.0.1 --directory web
 ```
 
-this includes:
-- 1d function approximation with visualization
-- 2d function approximation
+Open `http://127.0.0.1:8002`. The viewer also works with the committed exports without retraining. Test failures return a nonzero exit status.
 
-## theory
+## Limitations
 
-kans are based on the kolmogorov-arnold representation theorem, which says any multivariate continuous function can be represented as a composition of univariate functions. the key advantages:
+- Fixed Gaussian centers, not B-splines; no grid adaptation, spline fitting, pruning, or symbolic extraction.
+- The RBF branch clamps inputs to its grid range; the base activation does not. Boundary behavior can limit fits outside that range.
+- Each demo is one seeded run on one synthetic task. There is no real-data or parameter-matched MLP comparison.
+- Graph edge RMS is a sampled function summary, not feature importance; its connectivity animation is only an illustration.
+- Old spline-named Python arguments and incomplete JSON exports are intentionally unsupported. Models must be regenerated with the current exporter.
 
-1. **interpretability**: functions on edges can be visualized and analyzed
-2. **efficiency**: can achieve good approximation with fewer parameters
-3. **accuracy**: better approximation for smooth functions
-4. **sparsity**: natural regularization leads to sparse networks
+## Prior work and details
 
-## file structure
+The learned-univariate-edge design builds on [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). Gaussian parameterization differs from the paper's B-spline model. [FastKAN](https://github.com/ZiyaoLi/fast-kan) explores Gaussian RBF replacements; this repository does not claim to reproduce its implementation or results.
 
-```
-kan-visualizer/
-├── kan_layer.py       # core kan layer with spline functions
-├── kan_network.py     # kan network and multi-layer variants
-├── kan_trainer.py     # training framework and utilities
-├── examples.py        # usage examples and demonstrations
-├── export_for_web.py  # export trained models to json for web viz
-├── test_kan.py        # test suite for kan implementation
-├── requirements.txt   # python dependencies
-├── README.md          # this file
-├── GUIDE.md           # comprehensive kan theory and usage guide
-├── LICENSE            # mit license
-└── web/               # interactive web visualization
-    ├── index.html     # main application page
-    ├── server.py      # simple http server for local dev
-    ├── styles/        # css stylesheets
-    │   └── main.css   # premium design system
-    ├── js/            # javascript modules
-    │   ├── main.js              # application controller
-    │   ├── network-visualization.js  # d3.js network graph
-    │   ├── spline-visualization.js   # plotly spline plots
-    │   ├── inference-engine.js       # live inference demo
-    │   ├── training-visualization.js # training progress charts
-    │   └── utils.js             # utility functions
-    └── data/          # pre-trained model exports
-        ├── model_1d.json
-        ├── model_2d.json
-        ├── model_complex.json
-        └── datasets.json
-```
-
-## requirements
-
-- python 3.8+
-- pytorch 2.0+
-- numpy
-- matplotlib
-- tqdm
-- scipy
-
-## license
-
-see license file for details.
-
-## references
-
-- original kan paper: [kolmogorov-arnold networks](https://arxiv.org/abs/2404.19756)
-- b-spline interpolation theory
-- kolmogorov-arnold representation theorem 
+[Implementation, export equations, display meanings, and the next comparison](docs/GUIDE.md). Code is [MIT licensed](LICENSE).

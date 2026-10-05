@@ -20,13 +20,9 @@ class KANVisualizer {
         // setup event listeners
         this.setupEventListeners();
         
-        // load initial data
-        await this.loadData();
-        
-        // hide loading overlay
-        this.hideLoading();
-        
-        console.log('kan visualizer ready!');
+        if (await this.loadData()) {
+            console.log('kan visualizer ready!');
+        }
     }
     
     setupEventListeners() {
@@ -55,20 +51,25 @@ class KANVisualizer {
             this.datasets = await datasetsResponse.json();
             
             // load initial model
-            await this.loadModel();
+            return await this.loadModel();
             
         } catch (error) {
             console.error('error loading data:', error);
             this.showError('failed to load data. please check that the json files exist.');
+            return false;
         }
     }
     
     async loadModel() {
         try {
             console.log(`loading model: ${this.currentModelName}`);
+            this.networkViz.stopAnimation();
+            this.inferenceEngine.stopAnimation();
             
             const response = await fetch(`data/${this.currentModelName}.json`);
             this.currentModel = await response.json();
+            KANForward.forward(this.currentModel, new Array(this.currentModel.metadata.architecture[0]).fill(0));
+            this.getDatasetForModel();
             
             console.log('model loaded:', this.currentModel);
             
@@ -77,20 +78,29 @@ class KANVisualizer {
             
             // refresh current visualization
             this.switchMode();
+            this.hideLoading();
+            return true;
             
         } catch (error) {
             console.error('error loading model:', error);
-            this.showError(`failed to load model: ${this.currentModelName}`);
+            this.showError(`failed to load model: ${this.currentModelName}. ${error.message}`);
+            return false;
         }
     }
     
     updateModelInfo() {
         const info = this.currentModel.metadata;
-        const infoText = `${info.num_layers} layers | ${info.total_parameters} parameters | grid size: ${info.grid_size}`;
+        const infoText = `${info.num_layers} layers | ${info.total_parameters} parameters | Gaussian RBF | ${info.grid_size} intervals / ${info.grid_size + 1} centers`;
         document.getElementById('network-info').textContent = infoText;
     }
     
     switchMode() {
+        this.networkViz.stopAnimation();
+        this.inferenceEngine.stopAnimation();
+        this.isAnimating = false;
+        const button = document.getElementById('play-button');
+        button.disabled = !['network', 'inference'].includes(this.currentMode);
+        button.textContent = this.animationLabel();
         // hide all panels
         document.querySelectorAll('.panel').forEach(panel => {
             panel.classList.remove('active');
@@ -120,46 +130,26 @@ class KANVisualizer {
     }
     
     getDatasetForModel() {
-        // return appropriate dataset based on model input dimensions
-        const inputDim = this.currentModel.metadata.architecture[0];
-        
-        if (inputDim === 1) {
-            return this.datasets['1d_sine_wave'];
-        } else if (inputDim === 2) {
-            return this.datasets['2d_gaussian'];
+        const targetId = this.currentModel.metadata.target_id;
+        const dataset = this.datasets && this.datasets[targetId];
+        if (!dataset || dataset.target_id !== targetId) {
+            throw new Error(`No matching dataset for target_id: ${targetId}`);
         }
-        
-        return null;
+        return dataset;
     }
-    
+
+    animationLabel() {
+        return this.currentMode === 'inference' ? '▶ sweep inputs (real inference)' : '▶ illustrate connectivity';
+    }
+
     playAnimation() {
-        const button = document.getElementById('play-button');
-        
-        if (button.textContent.includes('▶')) {
-            // start animation
-            button.textContent = '⏸ pause animation';
-            
-            switch (this.currentMode) {
-                case 'network':
-                    this.networkViz.startAnimation();
-                    break;
-                case 'inference':
-                    this.inferenceEngine.startAnimation();
-                    break;
-            }
-        } else {
-            // stop animation
-            button.textContent = '▶ animate data flow';
-            
-            switch (this.currentMode) {
-                case 'network':
-                    this.networkViz.stopAnimation();
-                    break;
-                case 'inference':
-                    this.inferenceEngine.stopAnimation();
-                    break;
-            }
-        }
+        if (!['network', 'inference'].includes(this.currentMode)) return;
+        const visualization = this.currentMode === 'network' ? this.networkViz : this.inferenceEngine;
+        this.isAnimating = !this.isAnimating;
+        document.getElementById('play-button').textContent =
+            this.isAnimating ? '⏸ pause animation' : this.animationLabel();
+        if (this.isAnimating) visualization.startAnimation();
+        else visualization.stopAnimation();
     }
     
     hideLoading() {
@@ -172,6 +162,8 @@ class KANVisualizer {
     
     showError(message) {
         const overlay = document.getElementById('loading-overlay');
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '1';
         overlay.innerHTML = `
             <div style="text-align: center;">
                 <h2>⚠️ error</h2>

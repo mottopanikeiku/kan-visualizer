@@ -1,0 +1,27 @@
+{
+  "atol": 1e-06,
+  "bundled_float32_max_absolute_error": 6.479774727341514e-07,
+  "bundled_float32_models": 3,
+  "errors": 0,
+  "exported_curve_max_absolute_error": 8.881784197001252e-16,
+  "exported_curve_points_checked": 19200,
+  "failures": 0,
+  "learning_architecture": [
+    1,
+    1
+  ],
+  "learning_device": "cpu",
+  "learning_end_mse": 0.00030261301435530186,
+  "learning_loss_reduction_factor": 728.0750257941561,
+  "learning_samples": 41,
+  "learning_start_mse": 0.22032497823238373,
+  "learning_steps": 160,
+  "learning_target": "x^2",
+  "parity_inputs_per_model": 7,
+  "parity_max_absolute_error": 8.881784197001252e-16,
+  "parity_models": 8,
+  "rtol": 1e-06,
+  "seed": 1729,
+  "success": true,
+  "tests_run": 14
+}

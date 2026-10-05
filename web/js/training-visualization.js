@@ -9,7 +9,7 @@ class TrainingVisualization {
         
         this.model = model;
         
-        if (model.training_history) {
+        if (model.training_history && Array.isArray(model.training_history.loss) && model.training_history.loss.length) {
             this.plotTrainingCurves();
             this.displayTrainingStats();
         } else {
@@ -26,6 +26,7 @@ class TrainingVisualization {
             this.showNoDataMessage();
             return;
         }
+        document.getElementById('training-plots').innerHTML = '<div id="loss-plot"></div>';
         
         // create loss curve
         const lossTrace = {
@@ -60,7 +61,6 @@ class TrainingVisualization {
         }
         
         // create learning rate subplot if available
-        let subplots = [];
         if (history.learning_rate) {
             const lrTrace = {
                 x: Array.from({length: history.learning_rate.length}, (_, i) => i + 1),
@@ -114,7 +114,7 @@ class TrainingVisualization {
             responsive: true
         };
         
-        Plotly.newPlot('training-plots', traces, layout, config);
+        Plotly.newPlot('loss-plot', traces, layout, config);
     }
     
     plotConvergenceAnalysis(history) {
@@ -129,15 +129,15 @@ class TrainingVisualization {
         plotsContainer.appendChild(convergenceDiv);
         
         // compute convergence metrics
-        const windowSize = Math.min(10, Math.floor(history.loss.length / 10));
+        const windowSize = Math.max(1, Math.min(10, Math.floor(history.loss.length / 10)));
         const convergenceRate = this.computeConvergenceRate(history.loss, windowSize);
         
         const convergenceTrace = {
-            x: Array.from({length: convergenceRate.length}, (_, i) => i + windowSize),
+            x: Array.from({length: convergenceRate.length}, (_, i) => i + windowSize + 1),
             y: convergenceRate,
             type: 'scatter',
             mode: 'lines+markers',
-            name: 'convergence rate',
+            name: 'relative rolling-mean loss decrease',
             line: {
                 color: '#95a5a6',
                 width: 2
@@ -166,13 +166,13 @@ class TrainingVisualization {
         }
         
         const convergenceLayout = {
-            title: 'convergence analysis',
+            title: 'signed relative decrease in rolling-mean training loss',
             xaxis: {
                 title: 'epoch',
                 gridcolor: '#eee'
             },
             yaxis: {
-                title: 'convergence rate',
+                title: 'relative decrease',
                 gridcolor: '#eee'
             },
             yaxis2: history.grad_norm ? {
@@ -201,15 +201,12 @@ class TrainingVisualization {
     computeConvergenceRate(losses, windowSize) {
         const rates = [];
         
-        for (let i = windowSize; i < losses.length; i++) {
+        for (let i = windowSize + 1; i <= losses.length; i++) {
             const currentWindow = losses.slice(i - windowSize, i);
             const previousWindow = losses.slice(i - windowSize - 1, i - 1);
-            
-            const currentAvg = currentWindow.reduce((a, b) => a + b) / currentWindow.length;
-            const previousAvg = previousWindow.reduce((a, b) => a + b) / previousWindow.length;
-            
-            const rate = (previousAvg - currentAvg) / previousAvg;
-            rates.push(Math.max(0, rate)); // only positive convergence
+            const currentAvg = currentWindow.reduce((a, b) => a + b, 0) / windowSize;
+            const previousAvg = previousWindow.reduce((a, b) => a + b, 0) / windowSize;
+            rates.push(previousAvg === 0 ? null : (previousAvg - currentAvg) / previousAvg);
         }
         
         return rates;
@@ -235,7 +232,7 @@ class TrainingVisualization {
         const convergedEpoch = history.loss.findIndex(loss => loss <= convergenceThreshold);
         
         // training speed
-        const avgLossReduction = (initialLoss - finalLoss) / totalEpochs;
+        const avgLossReduction = (initialLoss - finalLoss) / Math.max(1, totalEpochs - 1);
         
         statsContainer.innerHTML = `
             <div class="stat-item">
@@ -251,12 +248,12 @@ class TrainingVisualization {
                 <strong>${bestLoss.toExponential(3)} (epoch ${bestEpoch})</strong>
             </div>
             <div class="stat-item">
-                <span>improvement:</span>
-                <strong>${improvementRatio.toFixed(1)}× reduction</strong>
+                <span>initial / final loss:</span>
+                <strong>${improvementRatio.toFixed(1)}×</strong>
             </div>
             <div class="stat-item">
-                <span>convergence:</span>
-                <strong>${convergedEpoch > 0 ? `epoch ${convergedEpoch}` : 'not achieved'}</strong>
+                <span>first loss ≤ 1% of initial:</span>
+                <strong>${convergedEpoch >= 0 ? `epoch ${convergedEpoch + 1}` : 'not reached'}</strong>
             </div>
             <div class="stat-item">
                 <span>avg reduction/epoch:</span>
@@ -281,69 +278,18 @@ class TrainingVisualization {
         // add model complexity metrics
         statsContainer.innerHTML += `
             <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 8px;">
-                <strong>model complexity:</strong><br>
+                <strong>model parameters:</strong><br>
                 • ${metadata.total_parameters} total parameters<br>
                 • ${metadata.num_layers} layers<br>
-                • grid size: ${metadata.grid_size}<br>
-                • spline order: ${metadata.spline_order}
+                • Gaussian RBF basis<br>
+                • ${metadata.grid_size} grid intervals / ${metadata.grid_size + 1} centers
             </div>
         `;
         
-        // add training insights
-        const insights = this.generateTrainingInsights(history, metadata);
         statsContainer.innerHTML += `
-            <div style="margin-top: 20px; padding: 15px; background: #f0fff0; border-radius: 8px;">
-                <strong>training insights:</strong><br>
-                ${insights}
-            </div>
+            <p>these are recorded training losses. a training-loss decrease alone
+            does not establish generalization or show whether the model needs more capacity.</p>
         `;
-    }
-    
-    generateTrainingInsights(history, metadata) {
-        const finalLoss = history.loss[history.loss.length - 1];
-        const initialLoss = history.loss[0];
-        const improvementRatio = initialLoss / finalLoss;
-        
-        let insights = '';
-        
-        // convergence assessment
-        if (improvementRatio > 1000) {
-            insights += '• <strong>excellent convergence</strong> - model learned the function very well<br>';
-        } else if (improvementRatio > 100) {
-            insights += '• <strong>good convergence</strong> - significant learning achieved<br>';
-        } else if (improvementRatio > 10) {
-            insights += '• <strong>moderate convergence</strong> - some learning but room for improvement<br>';
-        } else {
-            insights += '• <strong>limited convergence</strong> - may need more training or tuning<br>';
-        }
-        
-        // loss stability
-        const lastTenLosses = history.loss.slice(-10);
-        const lossVariability = this.computeVariability(lastTenLosses);
-        
-        if (lossVariability < 0.01) {
-            insights += '• training appears <strong>stable</strong> - loss is converging smoothly<br>';
-        } else if (lossVariability < 0.1) {
-            insights += '• training shows <strong>minor fluctuations</strong> - generally stable<br>';
-        } else {
-            insights += '• training shows <strong>instability</strong> - consider reducing learning rate<br>';
-        }
-        
-        // model complexity vs performance
-        const paramsPerLayer = metadata.total_parameters / metadata.num_layers;
-        if (finalLoss < 1e-4 && paramsPerLayer > 100) {
-            insights += '• model may be <strong>overparameterized</strong> for this task<br>';
-        } else if (finalLoss > 1e-2 && paramsPerLayer < 50) {
-            insights += '• model may benefit from <strong>increased capacity</strong><br>';
-        }
-        
-        return insights;
-    }
-    
-    computeVariability(values) {
-        const mean = values.reduce((a, b) => a + b) / values.length;
-        const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
-        return Math.sqrt(variance) / mean; // coefficient of variation
     }
     
     showNoDataMessage() {

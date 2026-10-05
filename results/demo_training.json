@@ -1,0 +1,60 @@
+{
+  "seed": 1729,
+  "device": "cpu",
+  "torch_version": "2.14.1+cpu",
+  "models": {
+    "model_1d": {
+      "seed": 1729,
+      "target_id": "1d_sine_wave",
+      "architecture": [
+        1,
+        10,
+        1
+      ],
+      "grid_size": 5,
+      "training_samples": 1000,
+      "evaluation_samples": 201,
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.01,
+      "initial_grid_mse": 0.5638806819915771,
+      "final_grid_mse": 0.031080981716513634
+    },
+    "model_2d": {
+      "seed": 1730,
+      "target_id": "2d_gaussian",
+      "architecture": [
+        2,
+        15,
+        1
+      ],
+      "grid_size": 5,
+      "training_samples": 1500,
+      "evaluation_samples": 961,
+      "epochs": 150,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "initial_grid_mse": 0.2022770494222641,
+      "final_grid_mse": 0.0021123706828802824
+    },
+    "model_complex": {
+      "seed": 1731,
+      "target_id": "2d_complex",
+      "architecture": [
+        2,
+        20,
+        15,
+        10,
+        1
+      ],
+      "grid_size": 7,
+      "training_samples": 2000,
+      "evaluation_samples": 961,
+      "epochs": 200,
+      "batch_size": 128,
+      "learning_rate": 0.005,
+      "initial_grid_mse": 0.5993726253509521,
+      "final_grid_mse": 0.019927382469177246
+    }
+  }
+}
