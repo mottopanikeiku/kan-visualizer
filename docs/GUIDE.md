@@ -48,6 +48,30 @@ Exports declare `basis: gaussian_rbf`. The browser evaluates coefficients, base 
 - A graph summary over sampled edge values is not causal feature importance.
 - Targets are selected by exported task identity, not merely by input dimension. The two-dimensional wave is `sin(x) * exp(-y*y)`; the interaction task is `sin(x*y) + 0.5*tanh(x-y)`.
 
+## Browser deployment
+
+The static viewer needs no build or model training. `.github/workflows/pages.yml` checks JavaScript syntax and exported JSON on pull requests, then uploads the entire `web/` directory, including `web/data/`. Pushes to `main` and manual workflow runs deploy that artifact with GitHub's Pages actions. Repository Pages settings must already allow GitHub Actions deployment; the workflow does not change them.
+
+Styles, scripts, and model fetches use document-relative paths, so the same files work at `/kan-visualizer/` without a root-path rewrite. To preview that prefix locally from the repository root:
+
+```bash
+preview=$(mktemp -d)
+ln -s "$PWD/web" "$preview/kan-visualizer"
+nice -n 19 python -m http.server 8002 --bind 127.0.0.1 --directory "$preview"
+```
+
+Open `http://127.0.0.1:8002/kan-visualizer/`. The page uses system font fallbacks and exact D3 `7.9.0` and Plotly `2.35.2` CDN URLs with SHA-384 integrity checks. Internet access is needed for those two libraries, but inference uses the checked-in model parameters entirely in the browser. Select a model, choose **live inference**, and change its input sliders to inspect the actual output and task target. The deployment smoke screenshot is in `docs/assets/pages-inference.png`.
+
+`training_history.train_loss` is the exporter's recorded batch-average loss series; the training tab plots it directly. An empty `val_loss` array is not presented as a validation measurement. The repeatable prefix smoke check exercises all three models and four views, compares the training trace with the exported series, changes inference sliders with keyboard events, and records errors, model outputs, and the screenshot:
+
+```bash
+uv run --no-project --with playwright playwright install chromium
+uv run --no-project --with playwright python tests/pages_smoke.py
+```
+
+If Chromium is already installed elsewhere, set `KAN_CHROMIUM_PATH` to its executable for the second command. The smoke check writes `results/browser_pages.json` and `docs/assets/pages-inference.png`.
+
+
 ## Verification and next comparison
 
 Run `nice -n 19 .venv/bin/python test_kan.py --report results/verification.json` from the repository root with Node installed. The runner returns a failure status if a check fails. It compares fixed Python/Node outputs, internal activations, and edge contributions, checks exported curves and targets, and requires a seeded toy training task to reduce MSE by at least a factor of ten. This is a correctness and learnability check, not a generalization benchmark.

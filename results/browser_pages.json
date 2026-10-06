@@ -1,0 +1,92 @@
+{
+  "url": "http://127.0.0.1:38117/kan-visualizer/",
+  "browser": "Playwright Chromium 153.0.8010.12",
+  "headless": true,
+  "viewport": {
+    "width": 1440,
+    "height": 1100
+  },
+  "console_errors": [],
+  "failed_requests": [],
+  "http_errors": [],
+  "local_request_paths": [
+    "/kan-visualizer/",
+    "/kan-visualizer/data/datasets.json",
+    "/kan-visualizer/data/model_1d.json",
+    "/kan-visualizer/data/model_2d.json",
+    "/kan-visualizer/data/model_complex.json",
+    "/kan-visualizer/js/inference-engine.js",
+    "/kan-visualizer/js/main.js",
+    "/kan-visualizer/js/model-forward.js",
+    "/kan-visualizer/js/network-visualization.js",
+    "/kan-visualizer/js/spline-visualization.js",
+    "/kan-visualizer/js/training-visualization.js",
+    "/kan-visualizer/js/utils.js",
+    "/kan-visualizer/styles/main.css"
+  ],
+  "models": [
+    {
+      "model": "model_1d",
+      "views": [
+        "network",
+        "splines",
+        "training",
+        "inference"
+      ],
+      "training_points": 100,
+      "input": [
+        0.7
+      ],
+      "output": 1.0965691340357657,
+      "target": 1.0893800429518654,
+      "target_id": "1d_sine_wave",
+      "displayed_output": "1.097",
+      "displayed_target": "target (1d_sine_wave): 1.089"
+    },
+    {
+      "model": "model_2d",
+      "views": [
+        "network",
+        "splines",
+        "training",
+        "inference"
+      ],
+      "training_points": 150,
+      "input": [
+        0.7,
+        -0.4
+      ],
+      "output": 0.5613209792614421,
+      "target": 0.5489661009217757,
+      "target_id": "2d_gaussian",
+      "displayed_output": "0.561",
+      "displayed_target": "target (2d_gaussian): 0.549"
+    },
+    {
+      "model": "model_complex",
+      "views": [
+        "network",
+        "splines",
+        "training",
+        "inference"
+      ],
+      "training_points": 200,
+      "input": [
+        0.7,
+        -0.4
+      ],
+      "output": 0.16432999324118894,
+      "target": 0.12389386231620114,
+      "target_id": "2d_complex",
+      "displayed_output": "0.164",
+      "displayed_target": "target (2d_complex): 0.124"
+    }
+  ],
+  "screenshot": "docs/assets/pages-inference.png",
+  "export_sha256": {
+    "datasets.json": "0ccfb4568a86963eef1fb4fe82e2ee04bea03929b053139321b80985baafc9b8",
+    "model_1d.json": "e40c53ab139eadd8dc5115fd09827ef956aafe8b9ea57afc23f7c071ca184beb",
+    "model_2d.json": "2d188efc5701575f3d55d151000c2c00843801fde67c0a476edd6fa3a21c1e90",
+    "model_complex.json": "1b41cab36bbd50f6b45e31bcb688cbdf5f25649470c3f7717bab2609e745bdbd"
+  }
+}

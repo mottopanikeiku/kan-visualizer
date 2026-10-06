@@ -2,6 +2,8 @@
 
 This is a small PyTorch Gaussian edge-network experiment with a browser viewer, inspired by [Liu et al.'s KAN paper](https://arxiv.org/abs/2404.19756), not its B-spline implementation.
 
+Live demo: https://mottopanikeiku.github.io/kan-visualizer/
+
 **Question:** can the browser show the functions and activations that the trained Python network actually computes?
 
 [kan_layer.py](kan_layer.py) learns Gaussian radial basis functions (RBFs) plus a base activation on each edge, with scaling applied before summing inputs. [export_for_web.py](export_for_web.py) exports the full model and sampled edge curves; [model-forward.js](web/js/model-forward.js) evaluates those parameters directly. Live inference shows real node activations, signed edge contributions, and the correct target for each task.
@@ -30,7 +32,7 @@ nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/
 nice -n 19 .venv/bin/python -m http.server 8002 --bind 127.0.0.1 --directory web
 ```
 
-Open `http://127.0.0.1:8002`. The viewer also works with the committed exports without retraining. Test failures return a nonzero exit status.
+Open `http://127.0.0.1:8002`. The viewer also works with the committed exports without retraining. Test failures return a nonzero exit status. [Pages deployment and project-prefix preview](docs/GUIDE.md#browser-deployment) describe how the static viewer is published.
 
 ## Limitations
 
@@ -45,3 +47,5 @@ Open `http://127.0.0.1:8002`. The viewer also works with the committed exports w
 The learned-univariate-edge design builds on [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). Gaussian parameterization differs from the paper's B-spline model. [FastKAN](https://github.com/ZiyaoLi/fast-kan) explores Gaussian RBF replacements; this repository does not claim to reproduce its implementation or results.
 
 [Implementation, export equations, display meanings, and the next comparison](docs/GUIDE.md). Code is [MIT licensed](LICENSE).
+
+Written with AI coding assistance.
