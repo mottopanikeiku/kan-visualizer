@@ -9,7 +9,7 @@ class TrainingVisualization {
         
         this.model = model;
         
-        if (model.training_history && Array.isArray(model.training_history.loss) && model.training_history.loss.length) {
+        if (model.training_history && Array.isArray(model.training_history.train_loss) && model.training_history.train_loss.length) {
             this.plotTrainingCurves();
             this.displayTrainingStats();
         } else {
@@ -22,7 +22,7 @@ class TrainingVisualization {
     plotTrainingCurves() {
         const history = this.model.training_history;
         
-        if (!history || !history.loss) {
+        if (!history || !Array.isArray(history.train_loss) || !history.train_loss.length) {
             this.showNoDataMessage();
             return;
         }
@@ -30,8 +30,8 @@ class TrainingVisualization {
         
         // create loss curve
         const lossTrace = {
-            x: Array.from({length: history.loss.length}, (_, i) => i + 1),
-            y: history.loss,
+            x: Array.from({length: history.train_loss.length}, (_, i) => i + 1),
+            y: history.train_loss,
             type: 'scatter',
             mode: 'lines',
             name: 'training loss',
@@ -44,7 +44,7 @@ class TrainingVisualization {
         const traces = [lossTrace];
         
         // add validation loss if available
-        if (history.val_loss) {
+        if (Array.isArray(history.val_loss) && history.val_loss.length) {
             const valLossTrace = {
                 x: Array.from({length: history.val_loss.length}, (_, i) => i + 1),
                 y: history.val_loss,
@@ -88,12 +88,14 @@ class TrainingVisualization {
                 type: 'log',
                 gridcolor: '#eee'
             },
-            yaxis2: history.learning_rate ? {
-                title: 'learning rate',
-                overlaying: 'y',
-                side: 'right',
-                type: 'log'
-            } : undefined,
+            ...(history.learning_rate ? {
+                yaxis2: {
+                    title: 'learning rate',
+                    overlaying: 'y',
+                    side: 'right',
+                    type: 'log'
+                }
+            } : {}),
             legend: {
                 x: 0.02,
                 y: 0.98,
@@ -129,8 +131,8 @@ class TrainingVisualization {
         plotsContainer.appendChild(convergenceDiv);
         
         // compute convergence metrics
-        const windowSize = Math.max(1, Math.min(10, Math.floor(history.loss.length / 10)));
-        const convergenceRate = this.computeConvergenceRate(history.loss, windowSize);
+        const windowSize = Math.max(1, Math.min(10, Math.floor(history.train_loss.length / 10)));
+        const convergenceRate = this.computeConvergenceRate(history.train_loss, windowSize);
         
         const convergenceTrace = {
             x: Array.from({length: convergenceRate.length}, (_, i) => i + windowSize + 1),
@@ -175,12 +177,14 @@ class TrainingVisualization {
                 title: 'relative decrease',
                 gridcolor: '#eee'
             },
-            yaxis2: history.grad_norm ? {
-                title: 'gradient norm',
-                overlaying: 'y',
-                side: 'right',
-                type: 'log'
-            } : undefined,
+            ...(history.grad_norm ? {
+                yaxis2: {
+                    title: 'gradient norm',
+                    overlaying: 'y',
+                    side: 'right',
+                    type: 'log'
+                }
+            } : {}),
             legend: {
                 x: 0.02,
                 y: 0.98,
@@ -218,18 +222,18 @@ class TrainingVisualization {
         const statsContainer = document.getElementById('stats-content');
         
         // compute training statistics
-        const finalLoss = history.loss[history.loss.length - 1];
-        const initialLoss = history.loss[0];
+        const finalLoss = history.train_loss[history.train_loss.length - 1];
+        const initialLoss = history.train_loss[0];
         const improvementRatio = initialLoss / finalLoss;
-        const totalEpochs = history.loss.length;
+        const totalEpochs = history.train_loss.length;
         
         // find best epoch
-        const bestEpoch = history.loss.indexOf(Math.min(...history.loss)) + 1;
-        const bestLoss = Math.min(...history.loss);
+        const bestEpoch = history.train_loss.indexOf(Math.min(...history.train_loss)) + 1;
+        const bestLoss = Math.min(...history.train_loss);
         
         // compute convergence info
         const convergenceThreshold = initialLoss * 0.01; // 1% of initial loss
-        const convergedEpoch = history.loss.findIndex(loss => loss <= convergenceThreshold);
+        const convergedEpoch = history.train_loss.findIndex(loss => loss <= convergenceThreshold);
         
         // training speed
         const avgLossReduction = (initialLoss - finalLoss) / Math.max(1, totalEpochs - 1);
