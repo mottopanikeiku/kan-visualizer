@@ -74,6 +74,13 @@ main { padding-bottom: 24px; }
 #target-output { color: var(--text-secondary); font-size: 0.9rem; }
 #inference-network, #inference-svg { display: block; width: 100%; }
 #inference-svg { height: auto; }
+#inference-values { margin-top: 16px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; }
+#inference-values summary { cursor: pointer; font-weight: 600; }
+#inference-values table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.85rem; }
+#inference-values caption { text-align: left; font-weight: 600; margin-bottom: 6px; }
+#inference-values th, #inference-values td { padding: 6px 4px; text-align: left; border-bottom: 1px solid var(--border); }
+#inference-values tbody th { font-weight: 400; overflow-wrap: anywhere; }
+#inference-values td { font-variant-numeric: tabular-nums; white-space: nowrap; }
 #activation-plot { width: 100%; }
 #training-plots { width: 100%; }
 .node { cursor: pointer; }

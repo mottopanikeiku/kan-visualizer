@@ -128,6 +128,20 @@
                 </div>
                 <div class="inference-visualization">
                     <div id="inference-network"></div>
+                    <details id="inference-values">
+                        <summary>Read numerical activations and edge contributions</summary>
+                        <p>I list the same values as the graph. Input rows are task coordinates; edge layers start at 1. Values are rounded to six decimal places.</p>
+                        <table>
+                            <caption>Actual node activations</caption>
+                            <thead><tr><th scope="col">Node</th><th scope="col">Activation</th></tr></thead>
+                            <tbody id="activation-values"></tbody>
+                        </table>
+                        <table>
+                            <caption>Signed edge contributions</caption>
+                            <thead><tr><th scope="col">Edge</th><th scope="col">Contribution</th></tr></thead>
+                            <tbody id="edge-values"></tbody>
+                        </table>
+                    </details>
                     <div class="output-display">
                         <h3>output</h3>
                         <div id="current-output">0.000</div>

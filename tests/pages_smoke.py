@@ -63,6 +63,37 @@ def layout_observation(page, model, view, width):
     return {'model': model, 'view': view, **observation}
 
 
+def numerical_observation(page, evaluation):
+    tables = [
+        ('Actual node activations',
+         [f'{"Input" if layer == 0 else f"Layer {layer}"}, node {node}'
+          for layer, values in enumerate(evaluation['activations']) for node in range(len(values))],
+         [value for values in evaluation['activations'] for value in values]),
+        ('Signed edge contributions',
+         [f'Layer {layer + 1}, input {input_index}, output {output}'
+          for layer, outputs in enumerate(evaluation['edges'])
+          for output, inputs in enumerate(outputs) for input_index in range(len(inputs))],
+         [value for outputs in evaluation['edges'] for inputs in outputs for value in inputs]),
+    ]
+    observations = {}
+    for name, expected_labels, expected_values in tables:
+        table = page.get_by_role('table', name=name, exact=True)
+        assert table.count() == 1
+        assert table.evaluate('(element) => element.closest(\'[role="img"]\') === null')
+        labels = table.get_by_role('rowheader').all_text_contents()
+        values = table.get_by_role('cell').all_text_contents()
+        assert labels == expected_labels, labels
+        assert len(values) == len(expected_values)
+        assert all(abs(float(label) - value) <= 0.000000501
+                   for label, value in zip(values, expected_values))
+        snapshot = table.aria_snapshot()
+        assert f'table "{name}"' in snapshot
+        assert f'rowheader "{expected_labels[0]}"' in snapshot
+        observations[name] = {'rows': len(values), 'first_label': labels[0],
+                              'first_value': values[0], 'last_value': values[-1]}
+    return observations
+
+
 with tempfile.TemporaryDirectory(prefix='kan-pages-preview-') as preview:
     (pathlib.Path(preview) / 'kan-visualizer').symlink_to(ROOT / 'web', target_is_directory=True)
     server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Handler, directory=preview))
@@ -162,6 +193,27 @@ with tempfile.TemporaryDirectory(prefix='kan-pages-preview-') as preview:
                             assert all(abs(float(label) - value) <= 0.000501 for label, value in zip(state['activation_labels'], flattened))
                             for layer, mean in zip(state['activations'], state['activation_means']):
                                 assert abs(mean - sum(abs(value) for value in layer) / len(layer)) < 1e-12
+                            details = page.locator('#inference-values')
+                            summary = page.get_by_text('Read numerical activations and edge contributions', exact=True)
+                            summary.focus()
+                            summary.press('Enter')
+                            assert details.get_attribute('open') is not None
+                            evaluation = page.evaluate('kanApp.inferenceEngine.evaluation')
+                            accessible_before = numerical_observation(page, evaluation)
+                            first_slider = page.get_by_label('input 0:', exact=True)
+                            first_slider.focus()
+                            first_slider.press('ArrowRight')
+                            page.wait_for_function('kanApp.inferenceEngine.currentInput[0] === 0.8')
+                            accessible_after = numerical_observation(page, page.evaluate('kanApp.inferenceEngine.evaluation'))
+                            assert accessible_before != accessible_after
+                            first_slider.press('ArrowLeft')
+                            page.wait_for_function('kanApp.inferenceEngine.currentInput[0] === 0.7')
+                            numerical_observation(page, page.evaluate('kanApp.inferenceEngine.evaluation'))
+                            state['accessible_tables'] = {'before': accessible_before, 'after_slider_change': accessible_after}
+                            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+                            summary.focus()
+                            summary.press('Enter')
+                            assert details.get_attribute('open') is None
                             records.append({'model': model, 'viewport_width': width, 'views': VIEWS, **state})
                         else:
                             training = page.evaluate('({actual: document.querySelector("#loss-plot").data[0].y, expected: kanApp.currentModel.training_history.train_loss, traces: document.querySelector("#loss-plot").data.map(trace => trace.name), stats: document.querySelector("#stats-content").textContent})')
