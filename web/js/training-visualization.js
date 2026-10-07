@@ -103,7 +103,7 @@ class TrainingVisualization {
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: 'white',
-            margin: { t: 60, r: 80, b: 60, l: 80 },
+            margin: { t: 50, r: history.learning_rate ? 60 : 20, b: 50, l: 50 },
             height: 400
         };
         
@@ -168,7 +168,7 @@ class TrainingVisualization {
         }
         
         const convergenceLayout = {
-            title: 'signed relative decrease in rolling-mean training loss',
+            title: 'rolling-mean loss decrease',
             xaxis: {
                 title: 'epoch',
                 gridcolor: '#eee'
@@ -192,7 +192,7 @@ class TrainingVisualization {
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: 'white',
-            margin: { t: 60, r: 80, b: 60, l: 80 },
+            margin: { t: 50, r: history.grad_norm ? 60 : 20, b: 50, l: 50 },
             height: 300
         };
         

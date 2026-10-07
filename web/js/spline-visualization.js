@@ -68,7 +68,7 @@ class SplineVisualization {
             y: data.y_values,
             type: 'scatter',
             mode: 'lines',
-            name: 'full edge contribution (base + Gaussian RBF)',
+            name: 'full edge function',
             line: { color: '#667eea', width: 3 }
         };
         const centerTrace = {
@@ -76,17 +76,17 @@ class SplineVisualization {
             y: layer.grid_points.map(() => 0),
             type: 'scatter',
             mode: 'markers',
-            name: 'Gaussian centers (shown at zero)',
+            name: 'Gaussian centers (at zero)',
             marker: { color: '#333', size: 8, symbol: 'diamond' }
         };
         const layout = {
-            title: `edge function: layer ${this.selectedLayer + 1}, connection ${this.selectedConnection}`,
+            title: `layer ${this.selectedLayer + 1}, edge ${this.selectedConnection}`,
             xaxis: { title: 'input value', gridcolor: '#eee', zerolinecolor: '#ccc' },
             yaxis: { title: 'full edge contribution', gridcolor: '#eee', zerolinecolor: '#ccc' },
             legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)' },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: 'white',
-            margin: { t: 60, r: 30, b: 60, l: 60 },
+            margin: { t: 50, r: 20, b: 50, l: 50 },
             height: 500
         };
         Plotly.newPlot('spline-plot', [edgeTrace, centerTrace], layout, {
@@ -118,7 +118,7 @@ class SplineVisualization {
             <div class="stat-item"><span>sampled output range:</span><strong>[${min.toFixed(3)}, ${max.toFixed(3)}]</strong></div>
             <div class="stat-item"><span>grid:</span><strong>${layer.grid_points.length - 1} intervals / ${layer.grid_points.length} centers</strong></div>
             <div class="stat-item"><span>sampled input range:</span><strong>[${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}]</strong></div>
-            <p>statistics use ${data.y_values.length} exported full-edge samples, not a measure of feature importance. the base activation uses the unclamped input.</p>
+            <p>I use ${data.y_values.length} exported full-edge samples for these statistics, not to measure feature importance. The base activation uses the unclamped input.</p>
         `;
     }
 }

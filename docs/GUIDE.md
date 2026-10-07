@@ -48,9 +48,11 @@ Exports declare `basis: gaussian_rbf`. The browser evaluates coefficients, base 
 - A graph summary over sampled edge values is not causal feature importance.
 - Targets are selected by exported task identity, not merely by input dimension. The two-dimensional wave is `sin(x) * exp(-y*y)`; the interaction task is `sin(x*y) + 0.5*tanh(x-y)`.
 
+I recommend the four-step guide at the top of the page: read the network, inspect an edge, move an input, then check the recorded training history. Node and edge selectors provide the same selection as graph clicks, without requiring a mouse. The live-inference view connects those curves to actual values; blue/red signs are also written as numbers rather than encoded only in color. Reduced-motion preferences disable automatic sweeps and particles while keeping sliders usable.
+
 ## Browser deployment
 
-The static viewer needs no build or model training. `.github/workflows/pages.yml` checks JavaScript syntax and exported JSON on pull requests, then uploads the entire `web/` directory, including `web/data/`. Pushes to `main` and manual workflow runs deploy that artifact with GitHub's Pages actions. Repository Pages settings must already allow GitHub Actions deployment; the workflow does not change them.
+The static viewer needs no build or model training. `.github/workflows/pages.yml` checks Python/Node behavior, committed comparison results, JavaScript syntax, exported JSON, and headless desktop/mobile Chromium on pull requests, then uploads the entire `web/` directory, including `web/data/`. Pushes to `main` and manual workflow runs deploy that artifact with GitHub's Pages actions. Repository Pages settings must already allow GitHub Actions deployment; the workflow does not change them.
 
 Styles, scripts, and model fetches use document-relative paths, so the same files work at `/kan-visualizer/` without a root-path rewrite. To preview that prefix locally from the repository root:
 
@@ -62,11 +64,11 @@ nice -n 19 python -m http.server 8002 --bind 127.0.0.1 --directory "$preview"
 
 Open `http://127.0.0.1:8002/kan-visualizer/`. The page uses system font fallbacks and exact D3 `7.9.0` and Plotly `2.35.2` CDN URLs with SHA-384 integrity checks. Internet access is needed for those two libraries, but inference uses the checked-in model parameters entirely in the browser. Select a model, choose **live inference**, and change its input sliders to inspect the actual output and task target. The deployment smoke screenshot is in `docs/assets/pages-inference.png`.
 
-`training_history.train_loss` is the exporter's recorded batch-average loss series; the training tab plots it directly. An empty `val_loss` array is not presented as a validation measurement. The repeatable prefix smoke check exercises all three models and four views, compares the training trace with the exported series, changes inference sliders with keyboard events, and records errors, model outputs, and the screenshot:
+`training_history.train_loss` is the exporter's recorded batch-average loss series; the training tab plots it directly. An empty `val_loss` array is not presented as a validation measurement. The repeatable prefix smoke check exercises all three models and four views at desktop and narrow mobile widths, compares the training trace with the exported series, selects nodes and edges with the keyboard, changes inference sliders, checks actual activations and edge summaries, verifies reduced-motion cancellation, and records errors, model outputs, and the screenshot:
 
 ```bash
-uv run --no-project --with playwright playwright install chromium
-uv run --no-project --with playwright python tests/pages_smoke.py
+uv run --no-project --with playwright==1.63.0 playwright install chromium
+uv run --no-project --with playwright==1.63.0 python tests/pages_smoke.py
 ```
 
 If Chromium is already installed elsewhere, set `KAN_CHROMIUM_PATH` to its executable for the second command. The smoke check writes `results/browser_pages.json` and `docs/assets/pages-inference.png`.

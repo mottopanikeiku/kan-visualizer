@@ -5,6 +5,7 @@ class KANVisualizer {
         this.currentModelName = 'model_1d';
         this.currentMode = 'network';
         this.datasets = null;
+        this.motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
         
         this.networkViz = new NetworkVisualization();
         this.splineViz = new SplineVisualization();
@@ -41,6 +42,19 @@ class KANVisualizer {
         // play button
         document.getElementById('play-button').addEventListener('click', () => {
             this.playAnimation();
+        });
+        document.querySelectorAll('.guide-steps button').forEach(button => {
+            button.addEventListener('click', () => {
+                this.currentMode = button.dataset.view;
+                document.getElementById('visualization-mode').value = this.currentMode;
+                this.switchMode();
+            });
+        });
+        this.motionPreference.addEventListener('change', () => {
+            this.networkViz.stopAnimation();
+            this.inferenceEngine.stopAnimation();
+            this.isAnimating = false;
+            this.updateAnimationControl();
         });
     }
     
@@ -98,9 +112,8 @@ class KANVisualizer {
         this.networkViz.stopAnimation();
         this.inferenceEngine.stopAnimation();
         this.isAnimating = false;
-        const button = document.getElementById('play-button');
-        button.disabled = !['network', 'inference'].includes(this.currentMode);
-        button.textContent = this.animationLabel();
+        this.updateAnimationControl();
+        this.updateGuide();
         // hide all panels
         document.querySelectorAll('.panel').forEach(panel => {
             panel.classList.remove('active');
@@ -138,16 +151,38 @@ class KANVisualizer {
         return dataset;
     }
 
+    updateGuide() {
+        const explanations = {
+            network: 'I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input.',
+            splines: 'I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions.',
+            inference: 'I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target.',
+            training: 'I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose.'
+        };
+        document.getElementById('view-explanation').textContent = explanations[this.currentMode];
+        document.querySelectorAll('.guide-steps button').forEach(button => {
+            if (button.dataset.view === this.currentMode) button.setAttribute('aria-current', 'step');
+            else button.removeAttribute('aria-current');
+        });
+    }
+
+    updateAnimationControl() {
+        const button = document.getElementById('play-button');
+        button.disabled = this.motionPreference.matches || !['network', 'inference'].includes(this.currentMode);
+        button.setAttribute('aria-pressed', String(Boolean(this.isAnimating)));
+        button.textContent = this.motionPreference.matches
+            ? 'Reduced motion: use manual controls'
+            : this.isAnimating ? 'Pause animation' : this.animationLabel();
+    }
+
     animationLabel() {
-        return this.currentMode === 'inference' ? '▶ sweep inputs (real inference)' : '▶ illustrate connectivity';
+        return this.currentMode === 'inference' ? 'Sweep inputs (real inference)' : 'Illustrate connectivity';
     }
 
     playAnimation() {
-        if (!['network', 'inference'].includes(this.currentMode)) return;
+        if (this.motionPreference.matches || !['network', 'inference'].includes(this.currentMode)) return;
         const visualization = this.currentMode === 'network' ? this.networkViz : this.inferenceEngine;
         this.isAnimating = !this.isAnimating;
-        document.getElementById('play-button').textContent =
-            this.isAnimating ? '⏸ pause animation' : this.animationLabel();
+        this.updateAnimationControl();
         if (this.isAnimating) visualization.startAnimation();
         else visualization.stopAnimation();
     }
