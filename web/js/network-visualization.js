@@ -14,6 +14,8 @@ class NetworkVisualization {
         console.log('rendering network visualization...');
         this.stopAnimation();
         this.model = model;
+        this.selectedEdge = null;
+        document.getElementById('network-selection').textContent = '';
         document.getElementById('edge-details').innerHTML = '<h3>edge function</h3><p>select an edge to see its full sampled function</p>';
         document.getElementById('layer-info').textContent = 'select a node to see details';
 
@@ -25,15 +27,36 @@ class NetworkVisualization {
         const rect = this.svg.node().getBoundingClientRect();
         this.width = rect.width;
         this.height = rect.height;
+        this.svg.attr('viewBox', `0 0 ${this.width} ${this.height}`);
 
         // create network layout
         this.createNetworkLayout(model);
 
         // draw network
         this.drawNetwork();
+        this.setupSelectionControls();
 
         console.log('network visualization complete');
     }
+    setupSelectionControls() {
+        const nodeSelect = document.getElementById('network-node-select');
+        const edgeSelect = document.getElementById('network-edge-select');
+        nodeSelect.replaceChildren(new Option('Choose a node', ''));
+        edgeSelect.replaceChildren(new Option('Choose an edge', ''));
+        this.nodes.forEach(node => {
+            nodeSelect.add(new Option(`${node.type}, layer ${node.layer + 1}, node ${node.index}`, String(node.id)));
+        });
+        this.edges.forEach(edge => {
+            edgeSelect.add(new Option(`layer ${edge.layerIdx + 1}, input ${edge.sourceIdx} → output ${edge.targetIdx}`, String(edge.id)));
+        });
+        nodeSelect.onchange = () => {
+            if (nodeSelect.value !== '') this.selectNode(this.nodes[Number(nodeSelect.value)]);
+        };
+        edgeSelect.onchange = () => {
+            if (edgeSelect.value !== '') this.selectEdge(this.edges[Number(edgeSelect.value)]);
+        };
+    }
+
 
     createNetworkLayout(model) {
         this.nodes = [];
@@ -189,13 +212,13 @@ class NetworkVisualization {
             .on('click', (event, d) => this.selectNode(d))
             .on('mouseover', function (event, d) {
                 d3.select(this)
-                    .transition().duration(200)
+                    .transition().duration(window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 200)
                     .attr('r', d.radius * 1.15)
                     .attr('filter', 'url(#glow)');
             })
             .on('mouseout', function (event, d) {
                 d3.select(this)
-                    .transition().duration(200)
+                    .transition().duration(window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 200)
                     .attr('r', d.radius)
                     .attr('filter', null);
             });
@@ -218,6 +241,9 @@ class NetworkVisualization {
 
     selectEdge(edge) {
         this.selectedEdge = edge;
+        document.getElementById('network-edge-select').value = String(edge.id);
+        document.getElementById('network-selection').textContent =
+            `Edge: layer ${edge.layerIdx + 1}, input ${edge.sourceIdx} to output ${edge.targetIdx}. Sampled full-edge RMS ${edge.weight.toFixed(4)}.`;
 
         // highlight selected edge
         this.svg.selectAll('.edge').classed('selected', false);
@@ -232,6 +258,11 @@ class NetworkVisualization {
     }
 
     selectNode(node) {
+        document.getElementById('network-node-select').value = String(node.id);
+        this.svg.selectAll('.node').classed('selected', d => d.id === node.id);
+        this.highlightNode(node);
+        document.getElementById('network-selection').textContent =
+            `Node: ${node.type}, layer ${node.layer + 1}, index ${node.index}.`;
         // show node details
         this.showNodeDetails(node);
 
@@ -268,8 +299,8 @@ class NetworkVisualization {
             <h3>Gaussian RBF edge function</h3>
             <p><strong>connection:</strong> layer ${edge.layerIdx + 1}, input ${edge.sourceIdx} → output ${edge.targetIdx}</p>
             <p><strong>sampled full-edge RMS:</strong> ${edge.weight.toFixed(4)}</p>
-            <p>${data.y_values.length} samples on [${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}]; includes the scaled base activation and RBF branch. not feature importance.</p>
-            <div id="edge-spline-plot" style="height: 200px; margin-top: 10px;"></div>
+            <p>I use ${data.y_values.length} samples on [${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}], including the scaled base activation and RBF branch. This RMS is not feature importance.</p>
+            <div id="edge-spline-plot" role="img" aria-label="Selected full sampled edge function"></div>
         `;
         this.plotEdgeSpline(data, 'edge-spline-plot');
     }
@@ -282,7 +313,6 @@ class NetworkVisualization {
             <p><strong>type:</strong> ${node.type}</p>
             <p><strong>layer:</strong> ${node.layer + 1}</p>
             <p><strong>index:</strong> ${node.index}</p>
-            <p><strong>position:</strong> (${node.x.toFixed(1)}, ${node.y.toFixed(1)})</p>
         `;
     }
 

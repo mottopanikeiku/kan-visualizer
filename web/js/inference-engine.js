@@ -40,8 +40,11 @@ class InferenceEngine {
             
             const label = document.createElement('label');
             label.textContent = `input ${i}:`;
+            label.htmlFor = `input-${i}`;
             
             const slider = document.createElement('input');
+            slider.id = `input-${i}`;
+            slider.setAttribute('aria-describedby', 'view-explanation');
             slider.type = 'range';
             slider.min = '-2';
             slider.max = '2';
@@ -69,7 +72,7 @@ class InferenceEngine {
     
     setupInferenceNetwork() {
         const container = document.getElementById('inference-network');
-        container.innerHTML = '<svg id="inference-svg" width="400" height="300"></svg>';
+        container.innerHTML = '<svg id="inference-svg" viewBox="0 0 400 300" role="img" aria-label="Actual activations and signed edge contributions" aria-describedby="inference-legend"></svg>';
         
         const svg = d3.select('#inference-svg');
         const width = 400;
@@ -97,7 +100,8 @@ class InferenceEngine {
                     .attr('r', 8)
                     .attr('fill', this.getNodeColor(layerIdx, layerCount))
                     .attr('stroke', '#333')
-                    .attr('stroke-width', 1);
+                    .attr('stroke-width', 1)
+                    .append('title');
                 
                 // add activation value text
                 svg.append('text')
@@ -174,8 +178,11 @@ class InferenceEngine {
             });
         });
         const magnitude = Math.max(...this.evaluation.activations.flat().map(Math.abs), 1e-12);
-        d3.select('#inference-svg').selectAll('.inference-node')
-            .attr('r', node => 6 + 4 * Math.abs(this.evaluation.activations[node.layer][node.index]) / magnitude);
+        const nodes = d3.select('#inference-svg').selectAll('.inference-node');
+        nodes.attr('r', node => 6 + 4 * Math.abs(this.evaluation.activations[node.layer][node.index]) / magnitude);
+        nodes.select('title').text(node =>
+            `layer ${node.layer + 1}, node ${node.index}: activation ${this.evaluation.activations[node.layer][node.index].toFixed(6)}`
+        );
         this.highlightActiveConnections();
     }
 
@@ -202,7 +209,7 @@ class InferenceEngine {
             marker: { size: 8, color: '#ff6b6b' }
         };
         Plotly.newPlot('activation-plot', [plotData], {
-            title: 'mean absolute actual activation by layer',
+            title: 'mean |activation|',
             xaxis: { title: 'input / layer' },
             yaxis: { title: 'mean |activation|' },
             margin: { t: 40, r: 20, b: 40, l: 50 },

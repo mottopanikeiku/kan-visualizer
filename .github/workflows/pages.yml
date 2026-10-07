@@ -25,6 +25,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.5'
+      - name: Install pinned CPU dependencies
+        run: |
+          uv venv --python 3.13
+          uv pip sync --index-strategy unsafe-best-match --python .venv/bin/python requirements.lock
+      - name: Check Python behavior and comparison data
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          MPLBACKEND: Agg
+        run: .venv/bin/python test_kan.py
+      - name: Install headless Chromium
+        run: uv run --no-project --with playwright==1.63.0 playwright install --with-deps chromium
+      - name: Check guided desktop and mobile viewer
+        run: uv run --no-project --with playwright==1.63.0 python tests/pages_smoke.py
       - name: Check viewer JavaScript
         run: |
           for script in web/js/*.js; do
