@@ -1,11 +1,16 @@
 {
-  "url": "http://127.0.0.1:38117/kan-visualizer/",
+  "url": "http://127.0.0.1:43035/kan-visualizer/",
   "browser": "Playwright Chromium 153.0.8010.12",
   "headless": true,
   "viewport": {
     "width": 1440,
     "height": 1100
   },
+  "tested_viewport_widths": [
+    1440,
+    390,
+    320
+  ],
   "console_errors": [],
   "failed_requests": [],
   "http_errors": [],
@@ -27,13 +32,13 @@
   "models": [
     {
       "model": "model_1d",
+      "viewport_width": 1440,
       "views": [
         "network",
         "splines",
-        "training",
-        "inference"
+        "inference",
+        "training"
       ],
-      "training_points": 100,
       "input": [
         0.7
       ],
@@ -41,17 +46,57 @@
       "target": 1.0893800429518654,
       "target_id": "1d_sine_wave",
       "displayed_output": "1.097",
-      "displayed_target": "target (1d_sine_wave): 1.089"
+      "displayed_target": "target (1d_sine_wave): 1.089",
+      "activations": [
+        [
+          0.7
+        ],
+        [
+          -0.2541465997533541,
+          0.4912132509081188,
+          0.6697677629101001,
+          0.2478205294373377,
+          0.35827152912027965,
+          -0.6595381131838167,
+          1.1284283609468977,
+          -0.20969558865108495,
+          0.5082938719154161,
+          -0.6135057496432792
+        ],
+        [
+          1.0965691340357657
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.254",
+        "0.491",
+        "0.670",
+        "0.248",
+        "0.358",
+        "-0.660",
+        "1.128",
+        "-0.210",
+        "0.508",
+        "-0.614",
+        "1.097"
+      ],
+      "activation_means": [
+        0.7,
+        0.5140681356469685,
+        1.0965691340357657
+      ],
+      "training_points": 100
     },
     {
       "model": "model_2d",
+      "viewport_width": 1440,
       "views": [
         "network",
         "splines",
-        "training",
-        "inference"
+        "inference",
+        "training"
       ],
-      "training_points": 150,
       "input": [
         0.7,
         -0.4
@@ -60,17 +105,69 @@
       "target": 0.5489661009217757,
       "target_id": "2d_gaussian",
       "displayed_output": "0.561",
-      "displayed_target": "target (2d_gaussian): 0.549"
+      "displayed_target": "target (2d_gaussian): 0.549",
+      "activations": [
+        [
+          0.7,
+          -0.4
+        ],
+        [
+          0.34967873313690634,
+          0.3262251434115184,
+          0.7637172122080503,
+          0.46772249715660197,
+          0.111351675003033,
+          0.8855818964083808,
+          0.015539387117097347,
+          0.5547114532948525,
+          -0.18479883467688424,
+          0.023556537550111833,
+          0.38022827244928353,
+          -0.39830514902245645,
+          0.16473562731858535,
+          0.38939390495349285,
+          -0.3319773270477152
+        ],
+        [
+          0.5613209792614421
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.400",
+        "0.350",
+        "0.326",
+        "0.764",
+        "0.468",
+        "0.111",
+        "0.886",
+        "0.016",
+        "0.555",
+        "-0.185",
+        "0.024",
+        "0.380",
+        "-0.398",
+        "0.165",
+        "0.389",
+        "-0.332",
+        "0.561"
+      ],
+      "activation_means": [
+        0.55,
+        0.356501576716998,
+        0.5613209792614421
+      ],
+      "training_points": 150
     },
     {
       "model": "model_complex",
+      "viewport_width": 1440,
       "views": [
         "network",
         "splines",
-        "training",
-        "inference"
+        "inference",
+        "training"
       ],
-      "training_points": 200,
       "input": [
         0.7,
         -0.4
@@ -79,7 +176,1372 @@
       "target": 0.12389386231620114,
       "target_id": "2d_complex",
       "displayed_output": "0.164",
-      "displayed_target": "target (2d_complex): 0.124"
+      "displayed_target": "target (2d_complex): 0.124",
+      "activations": [
+        [
+          0.7,
+          -0.4
+        ],
+        [
+          0.07081321605200086,
+          0.37436521895662034,
+          -0.7252092654252069,
+          0.17525915903213118,
+          0.7120565130126639,
+          0.13514920820384224,
+          -0.5289987396788489,
+          0.26792973580196244,
+          -0.3492313906907317,
+          -0.14212244023338644,
+          -0.6370754362737381,
+          -0.1152599001020001,
+          -0.2651323404725358,
+          0.6466218017901328,
+          -0.9055468312045696,
+          -0.2194175841598371,
+          -0.019986729243631953,
+          0.3791586517578718,
+          0.658202017438652,
+          -0.3669891385663837
+        ],
+        [
+          -0.1612715540420733,
+          -0.5043262234126051,
+          -1.0150330270040722,
+          -0.9528966832576792,
+          0.09034092869847982,
+          0.8492977662518594,
+          -0.9306878750513665,
+          1.4578617904210056,
+          -1.596688262628645,
+          -0.6459254320341302,
+          0.21786403985953917,
+          0.41589126469238435,
+          -0.11208052723849049,
+          0.19042389543331195,
+          -0.218325845067749
+        ],
+        [
+          -1.0505127150887015,
+          -0.8451724429640013,
+          0.251244144224731,
+          -0.9082803515645645,
+          0.9699669445792808,
+          -0.4843438187003968,
+          -0.5374806781624532,
+          -1.1597264084743852,
+          0.6063589112454804,
+          0.43728940986269055
+        ],
+        [
+          0.16432999324118894
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.400",
+        "0.071",
+        "0.374",
+        "-0.725",
+        "0.175",
+        "0.712",
+        "0.135",
+        "-0.529",
+        "0.268",
+        "-0.349",
+        "-0.142",
+        "-0.637",
+        "-0.115",
+        "-0.265",
+        "0.647",
+        "-0.906",
+        "-0.219",
+        "-0.020",
+        "0.379",
+        "0.658",
+        "-0.367",
+        "-0.161",
+        "-0.504",
+        "-1.015",
+        "-0.953",
+        "0.090",
+        "0.849",
+        "-0.931",
+        "1.458",
+        "-1.597",
+        "-0.646",
+        "0.218",
+        "0.416",
+        "-0.112",
+        "0.190",
+        "-0.218",
+        "-1.051",
+        "-0.845",
+        "0.251",
+        "-0.908",
+        "0.970",
+        "-0.484",
+        "-0.537",
+        "-1.160",
+        "0.606",
+        "0.437",
+        "0.164"
+      ],
+      "activation_means": [
+        0.55,
+        0.3847262659048374,
+        0.6239276743395592,
+        0.7250375824866684,
+        0.16432999324118894
+      ],
+      "training_points": 200
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 390,
+      "views": [
+        "network",
+        "splines",
+        "inference",
+        "training"
+      ],
+      "input": [
+        0.7
+      ],
+      "output": 1.0965691340357657,
+      "target": 1.0893800429518654,
+      "target_id": "1d_sine_wave",
+      "displayed_output": "1.097",
+      "displayed_target": "target (1d_sine_wave): 1.089",
+      "activations": [
+        [
+          0.7
+        ],
+        [
+          -0.2541465997533541,
+          0.4912132509081188,
+          0.6697677629101001,
+          0.2478205294373377,
+          0.35827152912027965,
+          -0.6595381131838167,
+          1.1284283609468977,
+          -0.20969558865108495,
+          0.5082938719154161,
+          -0.6135057496432792
+        ],
+        [
+          1.0965691340357657
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.254",
+        "0.491",
+        "0.670",
+        "0.248",
+        "0.358",
+        "-0.660",
+        "1.128",
+        "-0.210",
+        "0.508",
+        "-0.614",
+        "1.097"
+      ],
+      "activation_means": [
+        0.7,
+        0.5140681356469685,
+        1.0965691340357657
+      ],
+      "training_points": 100
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 390,
+      "views": [
+        "network",
+        "splines",
+        "inference",
+        "training"
+      ],
+      "input": [
+        0.7,
+        -0.4
+      ],
+      "output": 0.5613209792614421,
+      "target": 0.5489661009217757,
+      "target_id": "2d_gaussian",
+      "displayed_output": "0.561",
+      "displayed_target": "target (2d_gaussian): 0.549",
+      "activations": [
+        [
+          0.7,
+          -0.4
+        ],
+        [
+          0.34967873313690634,
+          0.3262251434115184,
+          0.7637172122080503,
+          0.46772249715660197,
+          0.111351675003033,
+          0.8855818964083808,
+          0.015539387117097347,
+          0.5547114532948525,
+          -0.18479883467688424,
+          0.023556537550111833,
+          0.38022827244928353,
+          -0.39830514902245645,
+          0.16473562731858535,
+          0.38939390495349285,
+          -0.3319773270477152
+        ],
+        [
+          0.5613209792614421
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.400",
+        "0.350",
+        "0.326",
+        "0.764",
+        "0.468",
+        "0.111",
+        "0.886",
+        "0.016",
+        "0.555",
+        "-0.185",
+        "0.024",
+        "0.380",
+        "-0.398",
+        "0.165",
+        "0.389",
+        "-0.332",
+        "0.561"
+      ],
+      "activation_means": [
+        0.55,
+        0.356501576716998,
+        0.5613209792614421
+      ],
+      "training_points": 150
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 390,
+      "views": [
+        "network",
+        "splines",
+        "inference",
+        "training"
+      ],
+      "input": [
+        0.7,
+        -0.4
+      ],
+      "output": 0.16432999324118894,
+      "target": 0.12389386231620114,
+      "target_id": "2d_complex",
+      "displayed_output": "0.164",
+      "displayed_target": "target (2d_complex): 0.124",
+      "activations": [
+        [
+          0.7,
+          -0.4
+        ],
+        [
+          0.07081321605200086,
+          0.37436521895662034,
+          -0.7252092654252069,
+          0.17525915903213118,
+          0.7120565130126639,
+          0.13514920820384224,
+          -0.5289987396788489,
+          0.26792973580196244,
+          -0.3492313906907317,
+          -0.14212244023338644,
+          -0.6370754362737381,
+          -0.1152599001020001,
+          -0.2651323404725358,
+          0.6466218017901328,
+          -0.9055468312045696,
+          -0.2194175841598371,
+          -0.019986729243631953,
+          0.3791586517578718,
+          0.658202017438652,
+          -0.3669891385663837
+        ],
+        [
+          -0.1612715540420733,
+          -0.5043262234126051,
+          -1.0150330270040722,
+          -0.9528966832576792,
+          0.09034092869847982,
+          0.8492977662518594,
+          -0.9306878750513665,
+          1.4578617904210056,
+          -1.596688262628645,
+          -0.6459254320341302,
+          0.21786403985953917,
+          0.41589126469238435,
+          -0.11208052723849049,
+          0.19042389543331195,
+          -0.218325845067749
+        ],
+        [
+          -1.0505127150887015,
+          -0.8451724429640013,
+          0.251244144224731,
+          -0.9082803515645645,
+          0.9699669445792808,
+          -0.4843438187003968,
+          -0.5374806781624532,
+          -1.1597264084743852,
+          0.6063589112454804,
+          0.43728940986269055
+        ],
+        [
+          0.16432999324118894
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.400",
+        "0.071",
+        "0.374",
+        "-0.725",
+        "0.175",
+        "0.712",
+        "0.135",
+        "-0.529",
+        "0.268",
+        "-0.349",
+        "-0.142",
+        "-0.637",
+        "-0.115",
+        "-0.265",
+        "0.647",
+        "-0.906",
+        "-0.219",
+        "-0.020",
+        "0.379",
+        "0.658",
+        "-0.367",
+        "-0.161",
+        "-0.504",
+        "-1.015",
+        "-0.953",
+        "0.090",
+        "0.849",
+        "-0.931",
+        "1.458",
+        "-1.597",
+        "-0.646",
+        "0.218",
+        "0.416",
+        "-0.112",
+        "0.190",
+        "-0.218",
+        "-1.051",
+        "-0.845",
+        "0.251",
+        "-0.908",
+        "0.970",
+        "-0.484",
+        "-0.537",
+        "-1.160",
+        "0.606",
+        "0.437",
+        "0.164"
+      ],
+      "activation_means": [
+        0.55,
+        0.3847262659048374,
+        0.6239276743395592,
+        0.7250375824866684,
+        0.16432999324118894
+      ],
+      "training_points": 200
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 320,
+      "views": [
+        "network",
+        "splines",
+        "inference",
+        "training"
+      ],
+      "input": [
+        0.7
+      ],
+      "output": 1.0965691340357657,
+      "target": 1.0893800429518654,
+      "target_id": "1d_sine_wave",
+      "displayed_output": "1.097",
+      "displayed_target": "target (1d_sine_wave): 1.089",
+      "activations": [
+        [
+          0.7
+        ],
+        [
+          -0.2541465997533541,
+          0.4912132509081188,
+          0.6697677629101001,
+          0.2478205294373377,
+          0.35827152912027965,
+          -0.6595381131838167,
+          1.1284283609468977,
+          -0.20969558865108495,
+          0.5082938719154161,
+          -0.6135057496432792
+        ],
+        [
+          1.0965691340357657
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.254",
+        "0.491",
+        "0.670",
+        "0.248",
+        "0.358",
+        "-0.660",
+        "1.128",
+        "-0.210",
+        "0.508",
+        "-0.614",
+        "1.097"
+      ],
+      "activation_means": [
+        0.7,
+        0.5140681356469685,
+        1.0965691340357657
+      ],
+      "training_points": 100
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 320,
+      "views": [
+        "network",
+        "splines",
+        "inference",
+        "training"
+      ],
+      "input": [
+        0.7,
+        -0.4
+      ],
+      "output": 0.5613209792614421,
+      "target": 0.5489661009217757,
+      "target_id": "2d_gaussian",
+      "displayed_output": "0.561",
+      "displayed_target": "target (2d_gaussian): 0.549",
+      "activations": [
+        [
+          0.7,
+          -0.4
+        ],
+        [
+          0.34967873313690634,
+          0.3262251434115184,
+          0.7637172122080503,
+          0.46772249715660197,
+          0.111351675003033,
+          0.8855818964083808,
+          0.015539387117097347,
+          0.5547114532948525,
+          -0.18479883467688424,
+          0.023556537550111833,
+          0.38022827244928353,
+          -0.39830514902245645,
+          0.16473562731858535,
+          0.38939390495349285,
+          -0.3319773270477152
+        ],
+        [
+          0.5613209792614421
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.400",
+        "0.350",
+        "0.326",
+        "0.764",
+        "0.468",
+        "0.111",
+        "0.886",
+        "0.016",
+        "0.555",
+        "-0.185",
+        "0.024",
+        "0.380",
+        "-0.398",
+        "0.165",
+        "0.389",
+        "-0.332",
+        "0.561"
+      ],
+      "activation_means": [
+        0.55,
+        0.356501576716998,
+        0.5613209792614421
+      ],
+      "training_points": 150
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 320,
+      "views": [
+        "network",
+        "splines",
+        "inference",
+        "training"
+      ],
+      "input": [
+        0.7,
+        -0.4
+      ],
+      "output": 0.16432999324118894,
+      "target": 0.12389386231620114,
+      "target_id": "2d_complex",
+      "displayed_output": "0.164",
+      "displayed_target": "target (2d_complex): 0.124",
+      "activations": [
+        [
+          0.7,
+          -0.4
+        ],
+        [
+          0.07081321605200086,
+          0.37436521895662034,
+          -0.7252092654252069,
+          0.17525915903213118,
+          0.7120565130126639,
+          0.13514920820384224,
+          -0.5289987396788489,
+          0.26792973580196244,
+          -0.3492313906907317,
+          -0.14212244023338644,
+          -0.6370754362737381,
+          -0.1152599001020001,
+          -0.2651323404725358,
+          0.6466218017901328,
+          -0.9055468312045696,
+          -0.2194175841598371,
+          -0.019986729243631953,
+          0.3791586517578718,
+          0.658202017438652,
+          -0.3669891385663837
+        ],
+        [
+          -0.1612715540420733,
+          -0.5043262234126051,
+          -1.0150330270040722,
+          -0.9528966832576792,
+          0.09034092869847982,
+          0.8492977662518594,
+          -0.9306878750513665,
+          1.4578617904210056,
+          -1.596688262628645,
+          -0.6459254320341302,
+          0.21786403985953917,
+          0.41589126469238435,
+          -0.11208052723849049,
+          0.19042389543331195,
+          -0.218325845067749
+        ],
+        [
+          -1.0505127150887015,
+          -0.8451724429640013,
+          0.251244144224731,
+          -0.9082803515645645,
+          0.9699669445792808,
+          -0.4843438187003968,
+          -0.5374806781624532,
+          -1.1597264084743852,
+          0.6063589112454804,
+          0.43728940986269055
+        ],
+        [
+          0.16432999324118894
+        ]
+      ],
+      "activation_labels": [
+        "0.700",
+        "-0.400",
+        "0.071",
+        "0.374",
+        "-0.725",
+        "0.175",
+        "0.712",
+        "0.135",
+        "-0.529",
+        "0.268",
+        "-0.349",
+        "-0.142",
+        "-0.637",
+        "-0.115",
+        "-0.265",
+        "0.647",
+        "-0.906",
+        "-0.219",
+        "-0.020",
+        "0.379",
+        "0.658",
+        "-0.367",
+        "-0.161",
+        "-0.504",
+        "-1.015",
+        "-0.953",
+        "0.090",
+        "0.849",
+        "-0.931",
+        "1.458",
+        "-1.597",
+        "-0.646",
+        "0.218",
+        "0.416",
+        "-0.112",
+        "0.190",
+        "-0.218",
+        "-1.051",
+        "-0.845",
+        "0.251",
+        "-0.908",
+        "0.970",
+        "-0.484",
+        "-0.537",
+        "-1.160",
+        "0.606",
+        "0.437",
+        "0.164"
+      ],
+      "activation_means": [
+        0.55,
+        0.3847262659048374,
+        0.6239276743395592,
+        0.7250375824866684,
+        0.16432999324118894
+      ],
+      "training_points": 200
+    }
+  ],
+  "layouts": [
+    {
+      "model": "model_1d",
+      "view": "network",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_1d",
+      "view": "splines",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_1d",
+      "view": "inference",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 323.5,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_1d",
+      "view": "training",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_2d",
+      "view": "network",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_2d",
+      "view": "splines",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_2d",
+      "view": "inference",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 323.5,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_2d",
+      "view": "training",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_complex",
+      "view": "network",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_complex",
+      "view": "splines",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_complex",
+      "view": "inference",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 323.5,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_complex",
+      "view": "training",
+      "viewport_width": 1440,
+      "document_width": 1440,
+      "body_width": 1440,
+      "panel_width": 1392,
+      "chart_width": 878.65625,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_1d",
+      "view": "network",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_1d",
+      "view": "splines",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_1d",
+      "view": "inference",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_1d",
+      "view": "training",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_2d",
+      "view": "network",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_2d",
+      "view": "splines",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_2d",
+      "view": "inference",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_2d",
+      "view": "training",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_complex",
+      "view": "network",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_complex",
+      "view": "splines",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_complex",
+      "view": "inference",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_complex",
+      "view": "training",
+      "viewport_width": 390,
+      "document_width": 390,
+      "body_width": 390,
+      "panel_width": 366,
+      "chart_width": 340,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_1d",
+      "view": "network",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_1d",
+      "view": "splines",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_1d",
+      "view": "inference",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_1d",
+      "view": "training",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_2d",
+      "view": "network",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_2d",
+      "view": "splines",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_2d",
+      "view": "inference",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_2d",
+      "view": "training",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    },
+    {
+      "model": "model_complex",
+      "view": "network",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "network",
+      "explanation": "I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input."
+    },
+    {
+      "model": "model_complex",
+      "view": "splines",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "splines",
+      "explanation": "I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions."
+    },
+    {
+      "model": "model_complex",
+      "view": "inference",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "inference",
+      "explanation": "I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target."
+    },
+    {
+      "model": "model_complex",
+      "view": "training",
+      "viewport_width": 320,
+      "document_width": 320,
+      "body_width": 320,
+      "panel_width": 296,
+      "chart_width": 270,
+      "focus_outline": {
+        "style": "solid",
+        "width": "3px"
+      },
+      "focused_view": "training",
+      "explanation": "I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose."
+    }
+  ],
+  "keyboard_selections": [
+    {
+      "model": "model_1d",
+      "viewport_width": 1440,
+      "node_selection": "11",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.5212160588988627,
+      "sample_count": 200
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 1440,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "1-0",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 1440,
+      "node_selection": "17",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.28633623241530165,
+      "sample_count": 200
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 1440,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "1-0",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 1440,
+      "node_selection": "47",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.39994675079213543,
+      "sample_count": 200
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 1440,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "0-1",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 390,
+      "node_selection": "11",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.5212160588988627,
+      "sample_count": 200
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 390,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "1-0",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 390,
+      "node_selection": "17",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.28633623241530165,
+      "sample_count": 200
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 390,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "1-0",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 390,
+      "node_selection": "47",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.39994675079213543,
+      "sample_count": 200
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 390,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "0-1",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 320,
+      "node_selection": "11",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.5212160588988627,
+      "sample_count": 200
+    },
+    {
+      "model": "model_1d",
+      "viewport_width": 320,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "1-0",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 320,
+      "node_selection": "17",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.28633623241530165,
+      "sample_count": 200
+    },
+    {
+      "model": "model_2d",
+      "viewport_width": 320,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "1-0",
+        "plot_points": 200
+      }
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 320,
+      "node_selection": "47",
+      "edge_selection": "0",
+      "sampled_edge_rms": 0.39994675079213543,
+      "sample_count": 200
+    },
+    {
+      "model": "model_complex",
+      "viewport_width": 320,
+      "edge_function_selection": {
+        "layer": 1,
+        "connection": "0-1",
+        "plot_points": 200
+      }
+    }
+  ],
+  "reduced_motion": [
+    {
+      "view": "network",
+      "reduced_motion": true,
+      "network_timer": null,
+      "inference_timer": null,
+      "particles": 0,
+      "spinner_animation": "none"
+    },
+    {
+      "view": "inference",
+      "reduced_motion": true,
+      "network_timer": null,
+      "inference_timer": null,
+      "particles": 0,
+      "spinner_animation": "none"
     }
   ],
   "screenshot": "docs/assets/pages-inference.png",

@@ -14,12 +14,12 @@
 <body>
     <header>
         <div class="container">
-            <h1>🧠 kolmogorov-arnold networks</h1>
-            <p>interactive visualization of Gaussian RBF functions on network edges</p>
+            <h1>Kolmogorov–Arnold networks</h1>
+            <p>I explore small trained networks with Gaussian functions on their edges.</p>
         </div>
     </header>
 
-    <nav class="controls">
+    <nav class="controls" aria-label="Model and view">
         <div class="container">
             <div class="control-group">
                 <label for="model-select">model:</label>
@@ -41,24 +41,44 @@
             </div>
             
             <div class="control-group">
-                <button id="play-button" class="play-btn">▶ illustrate connectivity</button>
+                <button id="play-button" class="play-btn" aria-pressed="false" aria-describedby="motion-note">Illustrate connectivity</button>
             </div>
         </div>
     </nav>
 
-    <main class="container">
+    <main id="main-content" class="container">
+        <section class="guide" aria-labelledby="guide-title">
+            <h2 id="guide-title">How I read this model</h2>
+            <p>I start with the structure, inspect one edge, move an input, then check the recorded loss.</p>
+            <ol class="guide-steps">
+                <li><button type="button" data-view="network" aria-current="step">1. Find a node</button></li>
+                <li><button type="button" data-view="splines">2. Inspect an edge</button></li>
+                <li><button type="button" data-view="inference">3. Move an input</button></li>
+                <li><button type="button" data-view="training">4. Check the loss</button></li>
+            </ol>
+            <p id="view-explanation" role="status" aria-live="polite"></p>
+            <p id="motion-note">I use moving particles only to illustrate connectivity. The input sweep recomputes real inference. With reduced motion, I use the manual controls instead.</p>
+        </section>
         <!-- network visualization panel -->
-        <section id="network-panel" class="panel active">
+        <section id="network-panel" class="panel active" aria-labelledby="network-title">
             <div class="panel-header">
-                <h2>network architecture</h2>
+                <h2 id="network-title">Network architecture</h2>
                 <div class="info">
                     <span id="network-info">loading...</span>
-                    <p>edge width and opacity: relative RMS of full exported edge samples, not feature importance. moving particles illustrate connectivity only.</p>
+                    <p>I scale edge width and opacity by the relative RMS of full exported edge samples, not feature importance. Particles illustrate connectivity only.</p>
                 </div>
             </div>
             <div class="visualization-container">
-                <svg id="network-svg"></svg>
+                <svg id="network-svg" role="img" aria-label="Network architecture" aria-describedby="network-keyboard-help"></svg>
                 <div id="network-sidebar">
+                    <div class="graph-controls">
+                        <p id="network-keyboard-help">I can select the same nodes and edges with these menus or click the graph. In a menu, I use the arrow keys to change the selection.</p>
+                        <label for="network-node-select">Inspect node</label>
+                        <select id="network-node-select" aria-controls="layer-info"></select>
+                        <label for="network-edge-select">Inspect edge</label>
+                        <select id="network-edge-select" aria-controls="edge-details"></select>
+                        <p id="network-selection" role="status" aria-live="polite"></p>
+                    </div>
                     <div id="layer-details">
                         <h3>layer details</h3>
                         <div id="layer-info">select a node to see details</div>
@@ -72,9 +92,9 @@
         </section>
 
         <!-- Gaussian RBF edge visualization panel -->
-        <section id="splines-panel" class="panel">
+        <section id="splines-panel" class="panel" aria-labelledby="splines-title">
             <div class="panel-header">
-                <h2>learnable Gaussian RBF edge functions</h2>
+                <h2 id="splines-title">Learned Gaussian edge functions</h2>
                 <div class="controls">
                     <label for="layer-select">layer:</label>
                     <select id="layer-select"></select>
@@ -83,7 +103,7 @@
                 </div>
             </div>
             <div class="visualization-container">
-                <div id="spline-plot"></div>
+                <div id="spline-plot" role="img" aria-label="Sampled full edge contribution and Gaussian centers"></div>
                 <div id="spline-info">
                     <h3>function details</h3>
                     <div id="function-equation"></div>
@@ -93,10 +113,10 @@
         </section>
 
         <!-- inference panel -->
-        <section id="inference-panel" class="panel">
+        <section id="inference-panel" class="panel" aria-labelledby="inference-title">
             <div class="panel-header">
-                <h2>live inference</h2>
-                <p>node labels are actual activations; node size scales with |activation|. edge width and opacity scale with |full edge contribution| at the current input; blue is nonnegative and red is negative.</p>
+                <h2 id="inference-title">Live inference</h2>
+                <p id="inference-legend">I show actual activations on nodes; size scales with |activation|. Edge width and opacity scale with |full edge contribution| at this input. Blue is nonnegative; red is negative.</p>
             </div>
             <div class="visualization-container">
                 <div class="input-controls">
@@ -116,19 +136,19 @@
                 </div>
                 <div class="activation-flow">
                     <h3>mean absolute actual activation</h3>
-                    <div id="activation-plot"></div>
+                    <div id="activation-plot" role="img" aria-label="Mean absolute actual activation by layer"></div>
                 </div>
             </div>
         </section>
 
         <!-- training history panel -->
-        <section id="training-panel" class="panel">
+        <section id="training-panel" class="panel" aria-labelledby="training-title">
             <div class="panel-header">
-                <h2>training progress</h2>
-                <p>recorded training loss by epoch; validation loss is shown only when exported</p>
+                <h2 id="training-title">Recorded training loss</h2>
+                <p>I show recorded loss by epoch, not live training. I include validation loss only when exported.</p>
             </div>
             <div class="visualization-container">
-                <div id="training-plots"></div>
+                <div id="training-plots" role="img" aria-label="Recorded training loss and relative rolling-mean loss decrease"></div>
                 <div id="training-stats">
                     <h3>training statistics</h3>
                     <div id="stats-content"></div>
@@ -140,17 +160,17 @@
     <footer>
         <div class="container">
             <p>
-                built with ❤️ using d3.js and plotly | 
-                <a href="https://github.com/mottopanikeiku/kan-visualizer" target="_blank">view source</a> |
-                learn more about <a href="https://arxiv.org/abs/2404.19756" target="_blank">kolmogorov-arnold networks</a>
+                I built this view with D3.js and Plotly.
+                <a href="https://github.com/mottopanikeiku/kan-visualizer" target="_blank" rel="noopener noreferrer">Source code</a> |
+                <a href="https://arxiv.org/abs/2404.19756" target="_blank" rel="noopener noreferrer">KAN paper</a>
             </p>
         </div>
     </footer>
 
     <!-- loading overlay -->
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <p>loading kan models...</p>
+    <div id="loading-overlay" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading trained models…</p>
     </div>
 
     <!-- scripts -->
