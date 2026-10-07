@@ -27,6 +27,12 @@ TASKS = {
     "2d_complex": ("2D Interaction", "sin(x*y) + 0.5*tanh(x-y)", 2, target_complex),
 }
 
+MODEL_CONFIGS = [
+    ("model_1d", "1d_sine_wave", [1, 10, 1], 5, 1000, 100, 64, 0.01),
+    ("model_2d", "2d_gaussian", [2, 15, 1], 5, 1500, 150, 128, 0.01),
+    ("model_complex", "2d_complex", [2, 20, 15, 10, 1], 7, 2000, 200, 128, 0.005),
+]
+
 
 def save_json(path, data):
     path = Path(path)
@@ -101,13 +107,8 @@ def train_and_export_sample_models():
     """Regenerate demos from fixed seeds; report MSE on a separate fixed grid."""
     torch.set_num_threads(1)
     seed = 1729
-    models = [
-        ("model_1d", "1d_sine_wave", [1, 10, 1], 5, 1000, 100, 64, 0.01),
-        ("model_2d", "2d_gaussian", [2, 15, 1], 5, 1500, 150, 128, 0.01),
-        ("model_complex", "2d_complex", [2, 20, 15, 10, 1], 7, 2000, 200, 128, 0.005),
-    ]
     results = {"seed": seed, "device": "cpu", "torch_version": torch.__version__, "models": {}}
-    for offset, (name, task_id, architecture, grid_size, n_samples, epochs, batch_size, lr) in enumerate(models):
+    for offset, (name, task_id, architecture, grid_size, n_samples, epochs, batch_size, lr) in enumerate(MODEL_CONFIGS):
         torch.manual_seed(seed + offset)
         target = TASKS[task_id][3]
         model = KAN(architecture, grid_size=grid_size)

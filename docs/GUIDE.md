@@ -1,6 +1,6 @@
 # Gaussian edge-network implementation
 
-This is a small KAN-inspired experiment, not a reproduction of the B-spline architecture in [Liu et al., *KAN: Kolmogorov-Arnold Networks*](https://arxiv.org/abs/2404.19756). The code uses fixed Gaussian radial basis functions (RBFs). No efficiency, interpretability, or accuracy advantage over an MLP has been measured here.
+I built a small KAN-inspired experiment, not a reproduction of the B-spline architecture in [Liu et al., *KAN: Kolmogorov-Arnold Networks*](https://arxiv.org/abs/2404.19756). The code uses fixed Gaussian radial basis functions (RBFs). I compare its accuracy with dense MLPs in [the multi-seed results](../results/mlp_comparison/summary.json); I do not measure an efficiency or interpretability advantage.
 
 ## Layer equation
 
@@ -72,8 +72,21 @@ uv run --no-project --with playwright python tests/pages_smoke.py
 If Chromium is already installed elsewhere, set `KAN_CHROMIUM_PATH` to its executable for the second command. The smoke check writes `results/browser_pages.json` and `docs/assets/pages-inference.png`.
 
 
-## Verification and next comparison
+## Verification and MLP comparison
 
 Run `nice -n 19 .venv/bin/python test_kan.py --report results/verification.json` from the repository root with Node installed. The runner returns a failure status if a check fails. It compares fixed Python/Node outputs, internal activations, and edge contributions, checks exported curves and targets, and requires a seeded toy training task to reduce MSE by at least a factor of ten. This is a correctness and learnability check, not a generalization benchmark.
 
-The next useful experiment is a parameter-matched MLP comparison on these same functions and evaluation grids, including multiple seeds and elapsed CPU time. No such comparison has been run. It needs only local CPU and no paid service.
+I compare the same three demo tasks in `../compare_mlp.py`. The Gaussian networks retain the exporter's architecture, Gaussian grid, training sample count, epochs, batch size, and learning rate. Dense MLPs use the same number of hidden layers, linear output layers, biases, and either Tanh or SiLU hidden activations. Widths are chosen from parameter counts, without looking at evaluation errors; MLP counts differ by less than 0.3%, including all biases and Gaussian edge scalers.
+
+For each of five seeds, all three model families receive identical uniform training inputs on `[-2, 2]`, target values, and shuffled minibatches. Separate generators keep those inputs and batches independent of each model's initialization. Adam uses the same task-specific learning rate and exact optimizer-step budget across families; the last iterate is evaluated, with no checkpoint selection or hyperparameter tuning on the evaluation grid. Seeds are paired data runs, not a guarantee of equivalent initialization across different architectures.
+
+The evaluation grids are the exporter's 201 evenly spaced one-dimensional inputs and the 31-by-31 two-dimensional grid, both spanning `[-2, 2]`. They are not the random training inputs. Raw per-seed files include initial and final MSE, final MAE and maximum absolute error, parameter counts, training steps, and hashes of training inputs, evaluation inputs, and minibatch orders. The summary checks that every task, model, and seed is present and paired before writing medians, min–max ranges, and the SVG figure.
+
+```bash
+for seed in 1729 1730 1731 1732 1733; do
+  nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python compare_mlp.py --seed "$seed"
+done
+.venv/bin/python compare_mlp.py --summarize
+```
+
+I use regression error rather than classification accuracy because all targets are real-valued functions. These are small noiseless synthetic tasks, one fixed optimizer setting per task, and one final step budget. The original RBF range stays `[-1, 1]` while inputs span `[-2, 2]`; its branch clamps outside that range. I do not extrapolate this comparison to adaptive-grid KANs, the paper's B-splines, real data, or training speed. Bundled browser models remain the earlier single-seed exports, not the best runs from this comparison.
