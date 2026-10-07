@@ -32,7 +32,7 @@ These are regression tasks, so I report mean squared error (MSE), not classifica
 
 [kan_layer.py](kan_layer.py) learns Gaussian coefficients and a base activation on each edge. [export_for_web.py](export_for_web.py) exports all forward parameters; [model-forward.js](web/js/model-forward.js) evaluates them directly, rather than interpolating plotted curves.
 
-I added a four-step guide: read the graph, inspect an edge, move an input, then inspect recorded training history. Keyboard-accessible selectors mirror graph clicks. Live inference shows actual node activations and signed edge contributions. Mobile layouts and reduced-motion controls keep the same information available.
+I added a four-step guide: read the graph, inspect an edge, move an input, then inspect recorded training history. Keyboard-accessible selectors mirror graph clicks. Live inference shows actual node activations and signed edge contributions, with the same values in labelled expandable tables outside the visual graph. Mobile layouts and reduced-motion controls keep the same information available.
 
 [Python/Node checks](results/verification.json) test numerical agreement and learning. [Headless Chromium checks](results/browser_pages.json) cover every model and view at desktop and mobile widths, keyboard selection, activation labels, and reduced motion, without console or request errors. The bundled browser models remain the earlier single-seed exports, not cherry-picked comparison runs.
 
