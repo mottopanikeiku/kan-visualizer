@@ -48,7 +48,7 @@ Exports declare `basis: gaussian_rbf`. The browser evaluates coefficients, base 
 - A graph summary over sampled edge values is not causal feature importance.
 - Targets are selected by exported task identity, not merely by input dimension. The two-dimensional wave is `sin(x) * exp(-y*y)`; the interaction task is `sin(x*y) + 0.5*tanh(x-y)`.
 
-I recommend the four-step guide at the top of the page: read the network, inspect an edge, move an input, then check the recorded training history. Node and edge selectors provide the same selection as graph clicks, without requiring a mouse. The live-inference view connects those curves to actual values; blue/red signs are also written as numbers rather than encoded only in color. Reduced-motion preferences disable automatic sweeps and particles while keeping sliders usable.
+I recommend the four-step guide at the top of the page: read the network, inspect an edge, move an input, then check the recorded training history. Node and edge selectors provide the same selection as graph clicks, without requiring a mouse. The live-inference view connects those curves to actual values; blue/red signs are also written as numbers rather than encoded only in color. Expand **Read numerical activations and edge contributions** for native labelled tables of every current value, outside the SVG's image role; those tables update with the sliders. Reduced-motion preferences disable automatic sweeps and particles while keeping sliders usable. Chromium checks the table roles, row labels and numbers, but I have not run a manual screen-reader session.
 
 ## Browser deployment
 

@@ -20,6 +20,7 @@ class InferenceEngine {
         
         // setup inference network
         this.setupInferenceNetwork();
+        this.setupNumericalTables();
         
         // initial prediction
         this.updatePrediction();
@@ -160,7 +161,52 @@ class InferenceEngine {
         document.getElementById('target-output').textContent =
             `target (${this.model.metadata.target_id}): ${this.targetOutput.toFixed(3)}`;
         this.updateNetworkActivations();
+        this.updateNumericalTables();
         this.updateActivationFlow();
+    }
+
+    setupNumericalTables() {
+        const activationBody = document.getElementById('activation-values');
+        const edgeBody = document.getElementById('edge-values');
+        activationBody.replaceChildren();
+        edgeBody.replaceChildren();
+        const appendRow = (body, label) => {
+            const row = document.createElement('tr');
+            const heading = document.createElement('th');
+            heading.scope = 'row';
+            heading.textContent = label;
+            const value = document.createElement('td');
+            row.append(heading, value);
+            body.appendChild(row);
+            return value;
+        };
+        this.activationCells = this.model.metadata.architecture.map((count, layer) =>
+            Array.from({ length: count }, (_, node) => appendRow(
+                activationBody, `${layer === 0 ? 'Input' : `Layer ${layer}`}, node ${node}`
+            ))
+        );
+        this.edgeCells = this.model.layers.map((layer, index) =>
+            Array.from({ length: layer.output_features }, (_, output) =>
+                Array.from({ length: layer.input_features }, (_, input) => appendRow(
+                    edgeBody, `Layer ${index + 1}, input ${input}, output ${output}`
+                ))
+            )
+        );
+    }
+
+    updateNumericalTables() {
+        this.evaluation.activations.forEach((values, layer) =>
+            values.forEach((value, node) => {
+                this.activationCells[layer][node].textContent = value.toFixed(6);
+            })
+        );
+        this.evaluation.edges.forEach((outputs, layer) =>
+            outputs.forEach((inputs, output) =>
+                inputs.forEach((value, input) => {
+                    this.edgeCells[layer][output][input].textContent = value.toFixed(6);
+                })
+            )
+        );
     }
 
     forwardPass(input) {
