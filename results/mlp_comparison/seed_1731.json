@@ -1,0 +1,332 @@
+{
+  "seed": 1731,
+  "device": "cpu",
+  "threads": 1,
+  "python_version": "3.13.15",
+  "torch_version": "2.14.1+cpu",
+  "platform": "Linux",
+  "machine": "x86_64",
+  "runs": [
+    {
+      "task_id": "1d_sine_wave",
+      "seed": 1731,
+      "family": "gaussian_edge",
+      "architecture": [
+        1,
+        10,
+        1
+      ],
+      "parameters": 160,
+      "optimizer_steps": 1600,
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.01,
+      "training_samples": 1000,
+      "evaluation_samples": 201,
+      "training_inputs_sha256": "b822b11a02b6b4c6044f1112ec7f6bafa074a08b7eb22d17d30cbf89c627897d",
+      "minibatch_order_sha256": "9dc7f2c45b419a5a4cebeb205bef8e1926392ad92e57ec11b7e9a99019c7d7cc",
+      "evaluation_inputs_sha256": "d8720ef7e9f6d8124bbd74bc1f838a6f90ac8790cdc55fa2c2324fd36ca5bc06",
+      "initial_grid": {
+        "mse": 0.590670108795166,
+        "mae": 0.6967270374298096,
+        "max_absolute_error": 1.4930148124694824
+      },
+      "final_grid": {
+        "mse": 0.03307125344872475,
+        "mae": 0.08297362178564072,
+        "max_absolute_error": 1.0979405641555786
+      },
+      "final_training": {
+        "mse": 0.029562871903181076,
+        "mae": 0.07775267213582993,
+        "max_absolute_error": 1.0619605779647827
+      }
+    },
+    {
+      "task_id": "1d_sine_wave",
+      "seed": 1731,
+      "family": "mlp_tanh",
+      "architecture": [
+        1,
+        53,
+        1
+      ],
+      "parameters": 160,
+      "optimizer_steps": 1600,
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.01,
+      "training_samples": 1000,
+      "evaluation_samples": 201,
+      "training_inputs_sha256": "b822b11a02b6b4c6044f1112ec7f6bafa074a08b7eb22d17d30cbf89c627897d",
+      "minibatch_order_sha256": "9dc7f2c45b419a5a4cebeb205bef8e1926392ad92e57ec11b7e9a99019c7d7cc",
+      "evaluation_inputs_sha256": "d8720ef7e9f6d8124bbd74bc1f838a6f90ac8790cdc55fa2c2324fd36ca5bc06",
+      "initial_grid": {
+        "mse": 0.7375245094299316,
+        "mae": 0.667247474193573,
+        "max_absolute_error": 1.7641654014587402
+      },
+      "final_grid": {
+        "mse": 0.05017705261707306,
+        "mae": 0.19522273540496826,
+        "max_absolute_error": 0.4516168236732483
+      },
+      "final_training": {
+        "mse": 0.05039423704147339,
+        "mae": 0.1965148001909256,
+        "max_absolute_error": 0.451691210269928
+      }
+    },
+    {
+      "task_id": "1d_sine_wave",
+      "seed": 1731,
+      "family": "mlp_silu",
+      "architecture": [
+        1,
+        53,
+        1
+      ],
+      "parameters": 160,
+      "optimizer_steps": 1600,
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.01,
+      "training_samples": 1000,
+      "evaluation_samples": 201,
+      "training_inputs_sha256": "b822b11a02b6b4c6044f1112ec7f6bafa074a08b7eb22d17d30cbf89c627897d",
+      "minibatch_order_sha256": "9dc7f2c45b419a5a4cebeb205bef8e1926392ad92e57ec11b7e9a99019c7d7cc",
+      "evaluation_inputs_sha256": "d8720ef7e9f6d8124bbd74bc1f838a6f90ac8790cdc55fa2c2324fd36ca5bc06",
+      "initial_grid": {
+        "mse": 0.627761960029602,
+        "mae": 0.6245685815811157,
+        "max_absolute_error": 1.625777244567871
+      },
+      "final_grid": {
+        "mse": 0.05237396061420441,
+        "mae": 0.19722819328308105,
+        "max_absolute_error": 0.4495377540588379
+      },
+      "final_training": {
+        "mse": 0.05279579013586044,
+        "mae": 0.19924142956733704,
+        "max_absolute_error": 0.45087599754333496
+      }
+    },
+    {
+      "task_id": "2d_gaussian",
+      "seed": 1731,
+      "family": "gaussian_edge",
+      "architecture": [
+        2,
+        15,
+        1
+      ],
+      "parameters": 360,
+      "optimizer_steps": 1800,
+      "epochs": 150,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "training_samples": 1500,
+      "evaluation_samples": 961,
+      "training_inputs_sha256": "460e4e4e70bedc00893c9644fce94ea3cbca6d13966b1860cc1bb061a47986f4",
+      "minibatch_order_sha256": "9adc4c333e3b94f744dc657bc42d8055b0436af516ddc17158f0aeaf489c77d5",
+      "evaluation_inputs_sha256": "c7d6fb7dbaf073b1e77c7dddb52946d386d48ac1b9b47b37b89e590c936f0d8f",
+      "initial_grid": {
+        "mse": 0.22318671643733978,
+        "mae": 0.37461501359939575,
+        "max_absolute_error": 1.1748769283294678
+      },
+      "final_grid": {
+        "mse": 0.0016625507269054651,
+        "mae": 0.024449845775961876,
+        "max_absolute_error": 0.21929526329040527
+      },
+      "final_training": {
+        "mse": 0.0017378742340952158,
+        "mae": 0.024062803015112877,
+        "max_absolute_error": 0.24968905746936798
+      }
+    },
+    {
+      "task_id": "2d_gaussian",
+      "seed": 1731,
+      "family": "mlp_tanh",
+      "architecture": [
+        2,
+        90,
+        1
+      ],
+      "parameters": 361,
+      "optimizer_steps": 1800,
+      "epochs": 150,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "training_samples": 1500,
+      "evaluation_samples": 961,
+      "training_inputs_sha256": "460e4e4e70bedc00893c9644fce94ea3cbca6d13966b1860cc1bb061a47986f4",
+      "minibatch_order_sha256": "9adc4c333e3b94f744dc657bc42d8055b0436af516ddc17158f0aeaf489c77d5",
+      "evaluation_inputs_sha256": "c7d6fb7dbaf073b1e77c7dddb52946d386d48ac1b9b47b37b89e590c936f0d8f",
+      "initial_grid": {
+        "mse": 0.20150136947631836,
+        "mae": 0.3736422657966614,
+        "max_absolute_error": 0.9863861203193665
+      },
+      "final_grid": {
+        "mse": 0.00016676461382303387,
+        "mae": 0.009998507797718048,
+        "max_absolute_error": 0.04733873903751373
+      },
+      "final_training": {
+        "mse": 0.00015033938689157367,
+        "mae": 0.009635214693844318,
+        "max_absolute_error": 0.03580085188150406
+      }
+    },
+    {
+      "task_id": "2d_gaussian",
+      "seed": 1731,
+      "family": "mlp_silu",
+      "architecture": [
+        2,
+        90,
+        1
+      ],
+      "parameters": 361,
+      "optimizer_steps": 1800,
+      "epochs": 150,
+      "batch_size": 128,
+      "learning_rate": 0.01,
+      "training_samples": 1500,
+      "evaluation_samples": 961,
+      "training_inputs_sha256": "460e4e4e70bedc00893c9644fce94ea3cbca6d13966b1860cc1bb061a47986f4",
+      "minibatch_order_sha256": "9adc4c333e3b94f744dc657bc42d8055b0436af516ddc17158f0aeaf489c77d5",
+      "evaluation_inputs_sha256": "c7d6fb7dbaf073b1e77c7dddb52946d386d48ac1b9b47b37b89e590c936f0d8f",
+      "initial_grid": {
+        "mse": 0.21066035330295563,
+        "mae": 0.3798797130584717,
+        "max_absolute_error": 1.0850132703781128
+      },
+      "final_grid": {
+        "mse": 0.0005286954110488296,
+        "mae": 0.017670763656497,
+        "max_absolute_error": 0.08233654499053955
+      },
+      "final_training": {
+        "mse": 0.0004576410574372858,
+        "mae": 0.01696193404495716,
+        "max_absolute_error": 0.07579600811004639
+      }
+    },
+    {
+      "task_id": "2d_complex",
+      "seed": 1731,
+      "family": "gaussian_edge",
+      "architecture": [
+        2,
+        20,
+        15,
+        10,
+        1
+      ],
+      "parameters": 5000,
+      "optimizer_steps": 3200,
+      "epochs": 200,
+      "batch_size": 128,
+      "learning_rate": 0.005,
+      "training_samples": 2000,
+      "evaluation_samples": 961,
+      "training_inputs_sha256": "4aeb66ab270f9bb3d051e62b24a3750082f6ad4cd8806c532504a7111c53b828",
+      "minibatch_order_sha256": "d1f2fd9bf533676a04a4c7560b88b570a4ca5cb840e5b496acbc5c0f7d69427f",
+      "evaluation_inputs_sha256": "c7d6fb7dbaf073b1e77c7dddb52946d386d48ac1b9b47b37b89e590c936f0d8f",
+      "initial_grid": {
+        "mse": 0.5993726253509521,
+        "mae": 0.6177639365196228,
+        "max_absolute_error": 1.7372610569000244
+      },
+      "final_grid": {
+        "mse": 0.019823525100946426,
+        "mae": 0.0801989734172821,
+        "max_absolute_error": 1.1117292642593384
+      },
+      "final_training": {
+        "mse": 0.011804558336734772,
+        "mae": 0.06311089545488358,
+        "max_absolute_error": 0.8844736814498901
+      }
+    },
+    {
+      "task_id": "2d_complex",
+      "seed": 1731,
+      "family": "mlp_tanh",
+      "architecture": [
+        2,
+        65,
+        48,
+        33,
+        1
+      ],
+      "parameters": 5014,
+      "optimizer_steps": 3200,
+      "epochs": 200,
+      "batch_size": 128,
+      "learning_rate": 0.005,
+      "training_samples": 2000,
+      "evaluation_samples": 961,
+      "training_inputs_sha256": "4aeb66ab270f9bb3d051e62b24a3750082f6ad4cd8806c532504a7111c53b828",
+      "minibatch_order_sha256": "d1f2fd9bf533676a04a4c7560b88b570a4ca5cb840e5b496acbc5c0f7d69427f",
+      "evaluation_inputs_sha256": "c7d6fb7dbaf073b1e77c7dddb52946d386d48ac1b9b47b37b89e590c936f0d8f",
+      "initial_grid": {
+        "mse": 0.7100105285644531,
+        "mae": 0.6560719013214111,
+        "max_absolute_error": 1.9474427700042725
+      },
+      "final_grid": {
+        "mse": 0.00040447580977343023,
+        "mae": 0.014758327975869179,
+        "max_absolute_error": 0.1252274513244629
+      },
+      "final_training": {
+        "mse": 0.0003243934770580381,
+        "mae": 0.013858812861144543,
+        "max_absolute_error": 0.10635602474212646
+      }
+    },
+    {
+      "task_id": "2d_complex",
+      "seed": 1731,
+      "family": "mlp_silu",
+      "architecture": [
+        2,
+        65,
+        48,
+        33,
+        1
+      ],
+      "parameters": 5014,
+      "optimizer_steps": 3200,
+      "epochs": 200,
+      "batch_size": 128,
+      "learning_rate": 0.005,
+      "training_samples": 2000,
+      "evaluation_samples": 961,
+      "training_inputs_sha256": "4aeb66ab270f9bb3d051e62b24a3750082f6ad4cd8806c532504a7111c53b828",
+      "minibatch_order_sha256": "d1f2fd9bf533676a04a4c7560b88b570a4ca5cb840e5b496acbc5c0f7d69427f",
+      "evaluation_inputs_sha256": "c7d6fb7dbaf073b1e77c7dddb52946d386d48ac1b9b47b37b89e590c936f0d8f",
+      "initial_grid": {
+        "mse": 0.6007417440414429,
+        "mae": 0.6179860830307007,
+        "max_absolute_error": 1.720444917678833
+      },
+      "final_grid": {
+        "mse": 0.0006832777871750295,
+        "mae": 0.01732618175446987,
+        "max_absolute_error": 0.1344335675239563
+      },
+      "final_training": {
+        "mse": 0.0006798923714086413,
+        "mae": 0.017168501392006874,
+        "max_absolute_error": 0.10801321268081665
+      }
+    }
+  ]
+}
