@@ -153,6 +153,8 @@ def summarize(output_dir):
                "optimizer": "Adam, default betas and epsilon, no weight decay, fixed final step",
                "parameter_matching": "Same number of hidden layers; dense widths chosen for similar parameter counts, within 0.3%. Biases included in MLP counts; Gaussian scalers included in edge counts.",
                "rbf_grid_range": [-1, 1], "input_range": [-2, 2],
+               "task_settings": CONFIGS,
+               "environment_file": "results/mlp_comparison/environment.json",
                "raw_files": [str(path.as_posix()) for path in raw_files],
                "rows": rows, "paired_mlp_wins": wins}
     save_json(output_dir / "summary.json", summary)
