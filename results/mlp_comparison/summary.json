@@ -1,0 +1,201 @@
+{
+  "seeds": [
+    1729,
+    1730,
+    1731,
+    1732,
+    1733
+  ],
+  "runs": 45,
+  "metric": "MSE on fixed separate evaluation grids; lower is better",
+  "optimizer": "Adam, default betas and epsilon, no weight decay, fixed final step",
+  "parameter_matching": "Same number of hidden layers; dense widths chosen for similar parameter counts, within 0.3%. Biases included in MLP counts; Gaussian scalers included in edge counts.",
+  "rbf_grid_range": [
+    -1,
+    1
+  ],
+  "input_range": [
+    -2,
+    2
+  ],
+  "task_settings": {
+    "1d_sine_wave": {
+      "kan": [
+        1,
+        10,
+        1
+      ],
+      "mlp": [
+        1,
+        53,
+        1
+      ],
+      "grid_size": 5,
+      "samples": 1000,
+      "epochs": 100,
+      "batch_size": 64,
+      "lr": 0.01
+    },
+    "2d_gaussian": {
+      "kan": [
+        2,
+        15,
+        1
+      ],
+      "mlp": [
+        2,
+        90,
+        1
+      ],
+      "grid_size": 5,
+      "samples": 1500,
+      "epochs": 150,
+      "batch_size": 128,
+      "lr": 0.01
+    },
+    "2d_complex": {
+      "kan": [
+        2,
+        20,
+        15,
+        10,
+        1
+      ],
+      "mlp": [
+        2,
+        65,
+        48,
+        33,
+        1
+      ],
+      "grid_size": 7,
+      "samples": 2000,
+      "epochs": 200,
+      "batch_size": 128,
+      "lr": 0.005
+    }
+  },
+  "environment_file": "results/mlp_comparison/environment.json",
+  "raw_files": [
+    "results/mlp_comparison/seed_1729.json",
+    "results/mlp_comparison/seed_1730.json",
+    "results/mlp_comparison/seed_1731.json",
+    "results/mlp_comparison/seed_1732.json",
+    "results/mlp_comparison/seed_1733.json"
+  ],
+  "rows": [
+    {
+      "task_id": "1d_sine_wave",
+      "family": "gaussian_edge",
+      "parameters": 160,
+      "optimizer_steps": 1600,
+      "median_grid_mse": 0.03247198089957237,
+      "min_grid_mse": 0.03040945902466774,
+      "max_grid_mse": 0.033077970147132874,
+      "mean_grid_mse": 0.03226336762309075,
+      "median_grid_mae": 0.08297362178564072
+    },
+    {
+      "task_id": "1d_sine_wave",
+      "family": "mlp_tanh",
+      "parameters": 160,
+      "optimizer_steps": 1600,
+      "median_grid_mse": 0.05017705261707306,
+      "min_grid_mse": 0.047130756080150604,
+      "max_grid_mse": 0.0634811669588089,
+      "mean_grid_mse": 0.051905657351017,
+      "median_grid_mae": 0.19522273540496826
+    },
+    {
+      "task_id": "1d_sine_wave",
+      "family": "mlp_silu",
+      "parameters": 160,
+      "optimizer_steps": 1600,
+      "median_grid_mse": 0.05237396061420441,
+      "min_grid_mse": 0.04958726838231087,
+      "max_grid_mse": 0.06134580820798874,
+      "mean_grid_mse": 0.05450567752122879,
+      "median_grid_mae": 0.19722819328308105
+    },
+    {
+      "task_id": "2d_gaussian",
+      "family": "gaussian_edge",
+      "parameters": 360,
+      "optimizer_steps": 1800,
+      "median_grid_mse": 0.0017804412636905909,
+      "min_grid_mse": 0.0016625507269054651,
+      "max_grid_mse": 0.002024176297709346,
+      "mean_grid_mse": 0.0017997706076130272,
+      "median_grid_mae": 0.02884877845644951
+    },
+    {
+      "task_id": "2d_gaussian",
+      "family": "mlp_tanh",
+      "parameters": 361,
+      "optimizer_steps": 1800,
+      "median_grid_mse": 0.00029357464518398046,
+      "min_grid_mse": 0.00015297382196877152,
+      "max_grid_mse": 0.001038141781464219,
+      "mean_grid_mse": 0.0003957057895604521,
+      "median_grid_mae": 0.012984962202608585
+    },
+    {
+      "task_id": "2d_gaussian",
+      "family": "mlp_silu",
+      "parameters": 361,
+      "optimizer_steps": 1800,
+      "median_grid_mse": 0.0003987966338172555,
+      "min_grid_mse": 0.00023989494366105646,
+      "max_grid_mse": 0.0005286954110488296,
+      "mean_grid_mse": 0.0003796177014010027,
+      "median_grid_mae": 0.014920158311724663
+    },
+    {
+      "task_id": "2d_complex",
+      "family": "gaussian_edge",
+      "parameters": 5000,
+      "optimizer_steps": 3200,
+      "median_grid_mse": 0.019823525100946426,
+      "min_grid_mse": 0.013071312569081783,
+      "max_grid_mse": 0.025224823504686356,
+      "mean_grid_mse": 0.01987238023430109,
+      "median_grid_mae": 0.0801989734172821
+    },
+    {
+      "task_id": "2d_complex",
+      "family": "mlp_tanh",
+      "parameters": 5014,
+      "optimizer_steps": 3200,
+      "median_grid_mse": 0.0006851406069472432,
+      "min_grid_mse": 0.00040447580977343023,
+      "max_grid_mse": 0.0014791435096412897,
+      "mean_grid_mse": 0.000762834498891607,
+      "median_grid_mae": 0.02102959156036377
+    },
+    {
+      "task_id": "2d_complex",
+      "family": "mlp_silu",
+      "parameters": 5014,
+      "optimizer_steps": 3200,
+      "median_grid_mse": 0.00019674230134114623,
+      "min_grid_mse": 5.966498065390624e-05,
+      "max_grid_mse": 0.0006832777871750295,
+      "mean_grid_mse": 0.00027919268832192755,
+      "median_grid_mae": 0.011221812106668949
+    }
+  ],
+  "paired_mlp_wins": {
+    "1d_sine_wave": {
+      "mlp_tanh": 0,
+      "mlp_silu": 0
+    },
+    "2d_gaussian": {
+      "mlp_tanh": 5,
+      "mlp_silu": 5
+    },
+    "2d_complex": {
+      "mlp_tanh": 5,
+      "mlp_silu": 5
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "cpu": "AMD Ryzen AI 5 PRO 340 w/ Radeon 840M",
+  "architecture": "x86_64",
+  "operating_system": "Linux",
+  "kernel": "7.2.5-200.fc44.x86_64",
+  "python": "3.13.15",
+  "pytorch": "2.14.1+cpu",
+  "numpy": "2.5.3",
+  "threads_per_job": 1,
+  "device": "cpu",
+  "precision": "float32",
+  "paid_compute_usd": 0,
+  "timing_measurements": false,
+  "dependencies": "requirements.lock",
+  "command_template": "nice -n 19 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python compare_mlp.py --seed SEED"
+}
