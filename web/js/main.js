@@ -199,13 +199,15 @@ class KANVisualizer {
     hideLoading() {
         const overlay = document.getElementById('loading-overlay');
         overlay.style.opacity = '0';
-        setTimeout(() => {
+        this.hideTimer = setTimeout(() => {
             overlay.style.display = 'none';
         }, 300);
     }
     
     showError(message) {
         const overlay = document.getElementById('loading-overlay');
+        // A fade-out still pending from an earlier successful load must not hide the error.
+        clearTimeout(this.hideTimer);
         overlay.style.display = 'flex';
         overlay.style.opacity = '1';
         const box = document.createElement('div');
