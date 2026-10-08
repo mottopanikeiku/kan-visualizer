@@ -1,4 +1,4 @@
-# Python 3.13, Linux x86_64; CPU PyTorch wheel.
+# Python 3.13, Linux x86_64 and aarch64; CPU PyTorch wheel.
 --extra-index-url https://download.pytorch.org/whl/cpu
 contourpy==1.4.0
 cycler==0.12.1
