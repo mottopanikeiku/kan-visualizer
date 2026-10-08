@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 import torch
@@ -89,6 +90,56 @@ class KANBehaviorTests(unittest.TestCase):
             with self.subTest(activation=activation):
                 layer = KANLayer(in_features=2, out_features=1, base_activation=activation)
                 self.assertEqual(tuple(layer(torch.randn(3, 2)).shape), (3, 1))
+
+    def test_optimizers_reduce_loss(self):
+        inputs = torch.linspace(-1, 1, 41).unsqueeze(1)
+        targets = inputs ** 2
+        for name, lr in (("LBFGS", 1.0), ("Adam", 0.05), ("AdamW", 0.05)):
+            with self.subTest(optimizer=name):
+                trainer = KANTrainer(KAN([1, 1], grid_size=8), device=torch.device("cpu"),
+                                     optimizer_name=name, lr=lr)
+                start = trainer.evaluate(inputs, targets)
+                trainer.train(inputs, targets, epochs=20, verbose=False)
+                self.assertLess(trainer.evaluate(inputs, targets), start / 2)
+        with self.assertRaises(ValueError):
+            KANTrainer(KAN([1, 1]), device=torch.device("cpu"), optimizer_name="SGD")
+
+    def test_recorded_loss_includes_regularization(self):
+        # lr=0 keeps the weights fixed, so the recorded loss is MSE plus the penalty.
+        model = KAN([2, 3, 1], grid_size=4)
+        trainer = KANTrainer(model, device=torch.device("cpu"), optimizer_name="Adam", lr=0.0)
+        x, y = trainer.create_dataset(lambda value: value.sum(dim=1), n_samples=32, input_dim=2)
+        history = trainer.train(x, y, epochs=1, regularize_activation=0.3,
+                                regularize_entropy=0.2, verbose=False)
+        with torch.no_grad():
+            penalty = model.regularization_loss(0.3, 0.2).item()
+        self.assertGreater(penalty, 0)
+        self.assertAlmostEqual(history["reg_loss"][0], penalty, places=6)
+        self.assertAlmostEqual(history["train_loss"][0], trainer.evaluate(x, y) + penalty, places=6)
+
+    def test_best_validation_checkpoint_round_trip(self):
+        inputs = torch.linspace(-1, 1, 41).unsqueeze(1)
+        targets = inputs ** 2
+        trainer = KANTrainer(KAN([1, 1], grid_size=8), device=torch.device("cpu"),
+                             optimizer_name="Adam", lr=0.05)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "best.pt"
+            history = trainer.train(inputs, targets, x_val=inputs, y_val=targets, epochs=10,
+                                    save_path=str(path), verbose=False)
+            self.assertEqual(len(history["val_loss"]), 10)
+            restored = KANTrainer(KAN([1, 1], grid_size=8), device=torch.device("cpu"))
+            restored.load_model(str(path))
+        self.assertAlmostEqual(restored.evaluate(inputs, targets), min(history["val_loss"]), places=6)
+
+    def test_dataset_noise_and_vector_targets(self):
+        trainer = KANTrainer(KAN([2, 1]), device=torch.device("cpu"))
+        x, y = trainer.create_dataset(lambda value: value[:, 0] - value[:, 1], n_samples=200,
+                                      input_dim=2, noise_level=0.1, x_range=(-2, 2))
+        self.assertEqual(tuple(y.shape), (200, 1))
+        self.assertTrue(torch.all(x >= -2) and torch.all(x <= 2))
+        residual = y[:, 0] - (x[:, 0] - x[:, 1])
+        self.assertGreater(residual.std().item(), 0.05)
+        self.assertLess(residual.std().item(), 0.2)
 
 
 def main():
