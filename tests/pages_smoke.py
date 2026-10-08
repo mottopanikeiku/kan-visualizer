@@ -251,6 +251,23 @@ with tempfile.TemporaryDirectory(prefix='kan-pages-preview-') as preview:
                     slider.press('ArrowRight')
                     page.wait_for_function('kanApp.inferenceEngine.currentInput[0] === -1.9')
                 motion_records.append(motion)
+            # A slow response for an earlier selection must not replace a newer model.
+            held = []
+            page.route('**/data/model_2d.json', lambda route: held.append(route))
+            page.select_option('#model-select', 'model_2d')
+            while not held:
+                page.wait_for_timeout(10)
+            page.select_option('#model-select', 'model_1d')
+            page.wait_for_function('kanApp.currentModel.metadata.target_id === "1d_sine_wave"')
+            with page.expect_response('**/data/model_2d.json') as late:
+                held[0].continue_()
+            late.value.body()
+            page.unroute('**/data/model_2d.json')
+            page.wait_for_timeout(200)
+            stale = page.evaluate('({selected: document.querySelector("#model-select").value, target_id: kanApp.currentModel.metadata.target_id})')
+            assert stale == {'selected': 'model_1d', 'target_id': '1d_sine_wave'}, stale
+            page.select_option('#model-select', 'model_complex')
+            page.wait_for_function('kanApp.currentModel.metadata.target_id === "2d_complex"')
             page.set_viewport_size({'width': 1440, 'height': 1100})
             page.select_option('#visualization-mode', 'inference')
             page.wait_for_load_state('networkidle')

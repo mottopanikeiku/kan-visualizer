@@ -80,13 +80,17 @@ class KANVisualizer {
     }
     
     async loadModel() {
+        const name = this.currentModelName;
         try {
-            console.log(`loading model: ${this.currentModelName}`);
+            console.log(`loading model: ${name}`);
             this.networkViz.stopAnimation();
             this.inferenceEngine.stopAnimation();
             
-            this.currentModel = await this.fetchJSON(`data/${this.currentModelName}.json`);
-            KANForward.forward(this.currentModel, new Array(this.currentModel.metadata.architecture[0]).fill(0));
+            const model = await this.fetchJSON(`data/${name}.json`);
+            // A newer selection may have started while this response was in flight.
+            if (name !== this.currentModelName) return false;
+            KANForward.forward(model, new Array(model.metadata.architecture[0]).fill(0));
+            this.currentModel = model;
             this.getDatasetForModel();
             
             console.log('model loaded:', this.currentModel);
@@ -100,8 +104,9 @@ class KANVisualizer {
             return true;
             
         } catch (error) {
+            if (name !== this.currentModelName) return false;
             console.error('error loading model:', error);
-            this.showError(`failed to load model: ${this.currentModelName}. ${error.message}`);
+            this.showError(`failed to load model: ${name}. ${error.message}`);
             return false;
         }
     }
