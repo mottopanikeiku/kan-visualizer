@@ -58,18 +58,23 @@ class KANVisualizer {
         });
     }
     
+    async fetchJSON(path) {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+        return response.json();
+    }
+
     async loadData() {
         try {
             // load datasets
-            const datasetsResponse = await fetch('data/datasets.json');
-            this.datasets = await datasetsResponse.json();
+            this.datasets = await this.fetchJSON('data/datasets.json');
             
             // load initial model
             return await this.loadModel();
             
         } catch (error) {
             console.error('error loading data:', error);
-            this.showError('failed to load data. please check that the json files exist.');
+            this.showError(`failed to load data (${error.message}). please check that the json files exist.`);
             return false;
         }
     }
@@ -80,8 +85,7 @@ class KANVisualizer {
             this.networkViz.stopAnimation();
             this.inferenceEngine.stopAnimation();
             
-            const response = await fetch(`data/${this.currentModelName}.json`);
-            this.currentModel = await response.json();
+            this.currentModel = await this.fetchJSON(`data/${this.currentModelName}.json`);
             KANForward.forward(this.currentModel, new Array(this.currentModel.metadata.architecture[0]).fill(0));
             this.getDatasetForModel();
             
@@ -199,15 +203,19 @@ class KANVisualizer {
         const overlay = document.getElementById('loading-overlay');
         overlay.style.display = 'flex';
         overlay.style.opacity = '1';
-        overlay.innerHTML = `
-            <div style="text-align: center;">
-                <h2>⚠️ error</h2>
-                <p>${message}</p>
-                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 5px; cursor: pointer;">
-                    reload page
-                </button>
-            </div>
-        `;
+        const box = document.createElement('div');
+        box.style.textAlign = 'center';
+        const title = document.createElement('h2');
+        title.textContent = 'error';
+        const text = document.createElement('p');
+        text.textContent = message;
+        const reload = document.createElement('button');
+        reload.type = 'button';
+        reload.textContent = 'reload page';
+        reload.style.cssText = 'margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 5px; cursor: pointer;';
+        reload.addEventListener('click', () => location.reload());
+        box.append(title, text, reload);
+        overlay.replaceChildren(box);
     }
 }
 
