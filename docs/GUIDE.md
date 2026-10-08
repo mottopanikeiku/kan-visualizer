@@ -64,7 +64,7 @@ nice -n 19 python -m http.server 8002 --bind 127.0.0.1 --directory "$preview"
 
 Open `http://127.0.0.1:8002/kan-visualizer/`. The page uses system font fallbacks and exact D3 `7.9.0` and Plotly `2.35.2` CDN URLs with SHA-384 integrity checks. Internet access is needed for those two libraries, but inference uses the checked-in model parameters entirely in the browser. Select a model, choose **live inference**, and change its input sliders to inspect the actual output and task target. The deployment smoke screenshot is in `docs/assets/pages-inference.png`.
 
-`training_history.train_loss` is the exporter's recorded batch-average loss series; the training tab plots it directly. An empty `val_loss` array is not presented as a validation measurement. The repeatable prefix smoke check exercises all three models and four views at desktop and narrow mobile widths, compares the training trace with the exported series, selects nodes and edges with the keyboard, changes inference sliders, checks actual activations and edge summaries, verifies reduced-motion cancellation, and records errors, model outputs, and the screenshot:
+`training_history.train_loss` is the exporter's recorded batch-average loss series; the training tab plots it directly. An empty `val_loss` array is not presented as a validation measurement. The repeatable prefix smoke check exercises all three models and four views at desktop and narrow mobile widths, compares the training trace with the exported series, selects nodes and edges with the keyboard, changes inference sliders, checks actual activations and edge summaries, verifies reduced-motion cancellation, checks that a slow earlier model response cannot replace a newer selection, and records errors, model outputs, and the screenshot:
 
 ```bash
 uv run --no-project --with playwright==1.63.0 playwright install chromium
@@ -76,7 +76,7 @@ If Chromium is already installed elsewhere, set `KAN_CHROMIUM_PATH` to its execu
 
 ## Verification and MLP comparison
 
-Run `nice -n 19 .venv/bin/python test_kan.py --report results/verification.json` from the repository root with Node installed. The runner returns a failure status if a check fails. It compares fixed Python/Node outputs, internal activations, and edge contributions, checks exported curves and targets, and requires a seeded toy training task to reduce MSE by at least a factor of ten. This is a correctness and learnability check, not a generalization benchmark.
+Run `nice -n 19 .venv/bin/python test_kan.py --report results/verification.json` from the repository root with Node installed. The runner returns a failure status if a check fails. It compares fixed Python/Node outputs, internal activations, and edge contributions, checks exported curves and targets, and requires a seeded toy training task to reduce MSE by at least a factor of ten. Trainer tests cover the LBFGS, Adam and AdamW paths, the regularization term in recorded loss, and best-validation checkpoints. This is a correctness and learnability check, not a generalization benchmark.
 
 I compare the same three demo tasks in `../compare_mlp.py`. The Gaussian networks retain the exporter's architecture, Gaussian grid, training sample count, epochs, batch size, and learning rate. Dense MLPs use the same number of hidden layers, linear output layers, biases, and either Tanh or SiLU hidden activations. Widths are chosen from parameter counts, without looking at evaluation errors; MLP counts differ by less than 0.3%, including all biases and Gaussian edge scalers.
 
