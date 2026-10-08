@@ -58,31 +58,39 @@ class KANVisualizer {
         });
     }
     
+    async fetchJSON(path) {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+        return response.json();
+    }
+
     async loadData() {
         try {
             // load datasets
-            const datasetsResponse = await fetch('data/datasets.json');
-            this.datasets = await datasetsResponse.json();
+            this.datasets = await this.fetchJSON('data/datasets.json');
             
             // load initial model
             return await this.loadModel();
             
         } catch (error) {
             console.error('error loading data:', error);
-            this.showError('failed to load data. please check that the json files exist.');
+            this.showError(`failed to load data (${error.message}). please check that the json files exist.`);
             return false;
         }
     }
     
     async loadModel() {
+        const name = this.currentModelName;
         try {
-            console.log(`loading model: ${this.currentModelName}`);
+            console.log(`loading model: ${name}`);
             this.networkViz.stopAnimation();
             this.inferenceEngine.stopAnimation();
             
-            const response = await fetch(`data/${this.currentModelName}.json`);
-            this.currentModel = await response.json();
-            KANForward.forward(this.currentModel, new Array(this.currentModel.metadata.architecture[0]).fill(0));
+            const model = await this.fetchJSON(`data/${name}.json`);
+            // A newer selection may have started while this response was in flight.
+            if (name !== this.currentModelName) return false;
+            KANForward.forward(model, new Array(model.metadata.architecture[0]).fill(0));
+            this.currentModel = model;
             this.getDatasetForModel();
             
             console.log('model loaded:', this.currentModel);
@@ -96,8 +104,9 @@ class KANVisualizer {
             return true;
             
         } catch (error) {
+            if (name !== this.currentModelName) return false;
             console.error('error loading model:', error);
-            this.showError(`failed to load model: ${this.currentModelName}. ${error.message}`);
+            this.showError(`failed to load model: ${name}. ${error.message}`);
             return false;
         }
     }
@@ -190,24 +199,30 @@ class KANVisualizer {
     hideLoading() {
         const overlay = document.getElementById('loading-overlay');
         overlay.style.opacity = '0';
-        setTimeout(() => {
+        this.hideTimer = setTimeout(() => {
             overlay.style.display = 'none';
         }, 300);
     }
     
     showError(message) {
         const overlay = document.getElementById('loading-overlay');
+        // A fade-out still pending from an earlier successful load must not hide the error.
+        clearTimeout(this.hideTimer);
         overlay.style.display = 'flex';
         overlay.style.opacity = '1';
-        overlay.innerHTML = `
-            <div style="text-align: center;">
-                <h2>⚠️ error</h2>
-                <p>${message}</p>
-                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 5px; cursor: pointer;">
-                    reload page
-                </button>
-            </div>
-        `;
+        const box = document.createElement('div');
+        box.style.textAlign = 'center';
+        const title = document.createElement('h2');
+        title.textContent = 'error';
+        const text = document.createElement('p');
+        text.textContent = message;
+        const reload = document.createElement('button');
+        reload.type = 'button';
+        reload.textContent = 'reload page';
+        reload.style.cssText = 'margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 5px; cursor: pointer;';
+        reload.addEventListener('click', () => location.reload());
+        box.append(title, text, reload);
+        overlay.replaceChildren(box);
     }
 }
 
