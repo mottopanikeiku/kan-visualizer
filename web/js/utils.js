@@ -219,12 +219,13 @@ class Utils {
     }
 }
 
-// global error handler
+// global error handler; event.error is null for cross-origin script and resource errors
 window.addEventListener('error', (event) => {
-    console.error('kan visualizer error:', event.error);
+    console.error('kan visualizer error:', event.error || event.message);
     
     // show user-friendly error message
     const errorDiv = document.createElement('div');
+    errorDiv.setAttribute('role', 'alert');
     errorDiv.style.cssText = `
         position: fixed;
         top: 20px;
@@ -237,11 +238,13 @@ window.addEventListener('error', (event) => {
         max-width: 300px;
         font-size: 14px;
     `;
-    errorDiv.innerHTML = `
-        <strong>⚠️ error occurred</strong><br>
-        ${event.error.message || 'something went wrong'}<br>
-        <small>check console for details</small>
-    `;
+    const title = document.createElement('strong');
+    title.textContent = 'error occurred';
+    const message = document.createElement('p');
+    message.textContent = (event.error && event.error.message) || event.message || 'something went wrong';
+    const hint = document.createElement('small');
+    hint.textContent = 'check console for details';
+    errorDiv.append(title, message, hint);
     
     document.body.appendChild(errorDiv);
     
