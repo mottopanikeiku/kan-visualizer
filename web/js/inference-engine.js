@@ -227,7 +227,7 @@ class InferenceEngine {
         const nodes = d3.select('#inference-svg').selectAll('.inference-node');
         nodes.attr('r', node => 6 + 4 * Math.abs(this.evaluation.activations[node.layer][node.index]) / magnitude);
         nodes.select('title').text(node =>
-            `layer ${node.layer + 1}, node ${node.index}: activation ${this.evaluation.activations[node.layer][node.index].toFixed(6)}`
+            `${node.layer === 0 ? 'input' : `layer ${node.layer}`}, node ${node.index}: activation ${this.evaluation.activations[node.layer][node.index].toFixed(6)}`
         );
         this.highlightActiveConnections();
     }

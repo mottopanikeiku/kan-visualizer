@@ -60,23 +60,6 @@ class TrainingVisualization {
             traces.push(valLossTrace);
         }
         
-        // create learning rate subplot if available
-        if (history.learning_rate) {
-            const lrTrace = {
-                x: Array.from({length: history.learning_rate.length}, (_, i) => i + 1),
-                y: history.learning_rate,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'learning rate',
-                line: {
-                    color: '#4ecdc4',
-                    width: 2
-                },
-                yaxis: 'y2'
-            };
-            traces.push(lrTrace);
-        }
-        
         const layout = {
             title: 'training progress',
             xaxis: {
@@ -88,14 +71,6 @@ class TrainingVisualization {
                 type: 'log',
                 gridcolor: '#eee'
             },
-            ...(history.learning_rate ? {
-                yaxis2: {
-                    title: 'learning rate',
-                    overlaying: 'y',
-                    side: 'right',
-                    type: 'log'
-                }
-            } : {}),
             legend: {
                 x: 0.02,
                 y: 0.98,
@@ -103,7 +78,7 @@ class TrainingVisualization {
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: 'white',
-            margin: { t: 50, r: history.learning_rate ? 60 : 20, b: 50, l: 50 },
+            margin: { t: 50, r: 20, b: 50, l: 50 },
             height: 400
         };
         
@@ -149,23 +124,7 @@ class TrainingVisualization {
             }
         };
         
-        // add gradient norm if available
         const traces = [convergenceTrace];
-        if (history.grad_norm) {
-            const gradTrace = {
-                x: Array.from({length: history.grad_norm.length}, (_, i) => i + 1),
-                y: history.grad_norm,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'gradient norm',
-                line: {
-                    color: '#e74c3c',
-                    width: 2
-                },
-                yaxis: 'y2'
-            };
-            traces.push(gradTrace);
-        }
         
         const convergenceLayout = {
             title: 'rolling-mean loss decrease',
@@ -177,14 +136,6 @@ class TrainingVisualization {
                 title: 'relative decrease',
                 gridcolor: '#eee'
             },
-            ...(history.grad_norm ? {
-                yaxis2: {
-                    title: 'gradient norm',
-                    overlaying: 'y',
-                    side: 'right',
-                    type: 'log'
-                }
-            } : {}),
             legend: {
                 x: 0.02,
                 y: 0.98,
@@ -192,7 +143,7 @@ class TrainingVisualization {
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: 'white',
-            margin: { t: 50, r: history.grad_norm ? 60 : 20, b: 50, l: 50 },
+            margin: { t: 50, r: 20, b: 50, l: 50 },
             height: 300
         };
         
@@ -264,20 +215,6 @@ class TrainingVisualization {
                 <strong>${avgLossReduction.toExponential(3)}</strong>
             </div>
         `;
-        
-        // add optimizer info if available
-        if (history.optimizer_info) {
-            statsContainer.innerHTML += `
-                <div class="stat-item">
-                    <span>optimizer:</span>
-                    <strong>${history.optimizer_info.name || 'unknown'}</strong>
-                </div>
-                <div class="stat-item">
-                    <span>learning rate:</span>
-                    <strong>${history.optimizer_info.lr || 'unknown'}</strong>
-                </div>
-            `;
-        }
         
         // add model complexity metrics
         statsContainer.innerHTML += `
