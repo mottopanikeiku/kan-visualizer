@@ -44,7 +44,7 @@ class NetworkVisualization {
         nodeSelect.replaceChildren(new Option('Choose a node', ''));
         edgeSelect.replaceChildren(new Option('Choose an edge', ''));
         this.nodes.forEach(node => {
-            nodeSelect.add(new Option(`${node.type}, layer ${node.layer + 1}, node ${node.index}`, String(node.id)));
+            nodeSelect.add(new Option(this.nodeName(node), String(node.id)));
         });
         this.edges.forEach(edge => {
             edgeSelect.add(new Option(`layer ${edge.layerIdx + 1}, input ${edge.sourceIdx} → output ${edge.targetIdx}`, String(edge.id)));
@@ -57,6 +57,10 @@ class NetworkVisualization {
         };
     }
 
+    // Node layer L is the output of edge layer L, matching the h{L}_i labels and inference tables.
+    nodeName(node) {
+        return node.layer === 0 ? `input, node ${node.index}` : `${node.type}, layer ${node.layer}, node ${node.index}`;
+    }
 
     createNetworkLayout(model) {
         this.nodes = [];
@@ -262,7 +266,7 @@ class NetworkVisualization {
         this.svg.selectAll('.node').classed('selected', d => d.id === node.id);
         this.highlightNode(node);
         document.getElementById('network-selection').textContent =
-            `Node: ${node.type}, layer ${node.layer + 1}, index ${node.index}.`;
+            `Node: ${this.nodeName(node)}.`;
         // show node details
         this.showNodeDetails(node);
 
@@ -311,7 +315,7 @@ class NetworkVisualization {
         detailsDiv.innerHTML = `
             <h3>node details</h3>
             <p><strong>type:</strong> ${node.type}</p>
-            <p><strong>layer:</strong> ${node.layer + 1}</p>
+            <p><strong>layer:</strong> ${node.layer === 0 ? 'input' : node.layer}</p>
             <p><strong>index:</strong> ${node.index}</p>
         `;
     }
