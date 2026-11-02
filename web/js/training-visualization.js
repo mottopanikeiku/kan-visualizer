@@ -226,11 +226,6 @@ class TrainingVisualization {
                 • ${metadata.grid_size} grid intervals / ${metadata.grid_size + 1} centers
             </div>
         `;
-        
-        statsContainer.innerHTML += `
-            <p>these are recorded training losses. a training-loss decrease alone
-            does not establish generalization or show whether the model needs more capacity.</p>
-        `;
     }
     
     showNoDataMessage() {
@@ -240,9 +235,8 @@ class TrainingVisualization {
         plotsContainer.innerHTML = `
             <div style="display: flex; align-items: center; justify-content: center; height: 400px; color: #666;">
                 <div style="text-align: center;">
-                    <h3>📊 no training data available</h3>
-                    <p>this model was loaded without training history.</p>
-                    <p>train a new model to see learning curves and statistics.</p>
+                    <h3>No training history</h3>
+                    <p>This export has no recorded loss values.</p>
                 </div>
             </div>
         `;
@@ -253,9 +247,7 @@ class TrainingVisualization {
                 <strong>no data</strong>
             </div>
             <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; color: #856404;">
-                <strong>note:</strong> training history is only available for models 
-                that were trained with the export script. pre-trained models may 
-                not include this information.
+                Export the model with its training history to display learning curves.
             </div>
         `;
     }

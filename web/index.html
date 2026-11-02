@@ -15,7 +15,7 @@
     <header>
         <div class="container">
             <h1>Kolmogorov–Arnold networks</h1>
-            <p>I explore small trained networks with Gaussian functions on their edges.</p>
+            <p>Inspect trained Gaussian edge functions and follow their activations.</p>
         </div>
     </header>
 
@@ -48,8 +48,8 @@
 
     <main id="main-content" class="container">
         <section class="guide" aria-labelledby="guide-title">
-            <h2 id="guide-title">How I read this model</h2>
-            <p>I start with the structure, inspect one edge, move an input, then check the recorded loss.</p>
+            <h2 id="guide-title">Inspect the model</h2>
+            <p>Choose a view to inspect the network, its edge functions or a prediction.</p>
             <ol class="guide-steps">
                 <li><button type="button" data-view="network" aria-current="step">1. Find a node</button></li>
                 <li><button type="button" data-view="splines">2. Inspect an edge</button></li>
@@ -57,7 +57,7 @@
                 <li><button type="button" data-view="training">4. Check the loss</button></li>
             </ol>
             <p id="view-explanation" role="status" aria-live="polite"></p>
-            <p id="motion-note">I use moving particles only to illustrate connectivity. The input sweep recomputes real inference. With reduced motion, I use the manual controls instead.</p>
+            <p id="motion-note">Particles illustrate connectivity. Input sweeps recompute predictions. Reduced-motion mode keeps the manual controls.</p>
         </section>
         <!-- network visualization panel -->
         <section id="network-panel" class="panel active" aria-labelledby="network-title">
@@ -65,14 +65,14 @@
                 <h2 id="network-title">Network architecture</h2>
                 <div class="info">
                     <span id="network-info">loading...</span>
-                    <p>I scale edge width and opacity by the relative RMS of full exported edge samples, not feature importance. Particles illustrate connectivity only.</p>
+                    <p>Edge width and opacity scale with sampled edge RMS.</p>
                 </div>
             </div>
             <div class="visualization-container">
                 <svg id="network-svg" role="img" aria-label="Network architecture" aria-describedby="network-keyboard-help"></svg>
                 <div id="network-sidebar">
                     <div class="graph-controls">
-                        <p id="network-keyboard-help">I can select the same nodes and edges with these menus or click the graph. In a menu, I use the arrow keys to change the selection.</p>
+                        <p id="network-keyboard-help">Select a node or edge in the graph or use these menus. Arrow keys change the menu selection.</p>
                         <label for="network-node-select">Inspect node</label>
                         <select id="network-node-select" aria-controls="layer-info"></select>
                         <label for="network-edge-select">Inspect edge</label>
@@ -116,7 +116,7 @@
         <section id="inference-panel" class="panel" aria-labelledby="inference-title">
             <div class="panel-header">
                 <h2 id="inference-title">Live inference</h2>
-                <p id="inference-legend">I show actual activations on nodes; size scales with |activation|. Edge width and opacity scale with |full edge contribution| at this input. Blue is nonnegative; red is negative.</p>
+                <p id="inference-legend">Nodes show activations; edges show contributions at the current input. Size scales with magnitude. Blue is nonnegative; red is negative.</p>
             </div>
             <div class="visualization-container">
                 <div class="input-controls">
@@ -130,7 +130,7 @@
                     <div id="inference-network"></div>
                     <details id="inference-values">
                         <summary>Read numerical activations and edge contributions</summary>
-                        <p>I list the same values as the graph. Input rows are task coordinates; edge layers start at 1. Values are rounded to six decimal places.</p>
+                        <p>The same values as the graph, rounded to six decimal places. Input rows are task coordinates; edge layers start at 1.</p>
                         <table>
                             <caption>Actual node activations</caption>
                             <thead><tr><th scope="col">Node</th><th scope="col">Activation</th></tr></thead>
@@ -159,7 +159,7 @@
         <section id="training-panel" class="panel" aria-labelledby="training-title">
             <div class="panel-header">
                 <h2 id="training-title">Recorded training loss</h2>
-                <p>I show recorded loss by epoch, not live training. I include validation loss only when exported.</p>
+                <p>Loss by training epoch, with validation loss when available.</p>
             </div>
             <div class="visualization-container">
                 <div id="training-plots" role="img" aria-label="Recorded training loss and relative rolling-mean loss decrease"></div>

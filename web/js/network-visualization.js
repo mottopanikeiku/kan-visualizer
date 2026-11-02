@@ -303,7 +303,7 @@ class NetworkVisualization {
             <h3>Gaussian RBF edge function</h3>
             <p><strong>connection:</strong> layer ${edge.layerIdx + 1}, input ${edge.sourceIdx} → output ${edge.targetIdx}</p>
             <p><strong>sampled full-edge RMS:</strong> ${edge.weight.toFixed(4)}</p>
-            <p>I use ${data.y_values.length} samples on [${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}], including the scaled base activation and RBF branch. This RMS is not feature importance.</p>
+            <p>${data.y_values.length} samples on [${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}], including the scaled base activation and RBF branch.</p>
             <div id="edge-spline-plot" role="img" aria-label="Selected full sampled edge function"></div>
         `;
         this.plotEdgeSpline(data, 'edge-spline-plot');

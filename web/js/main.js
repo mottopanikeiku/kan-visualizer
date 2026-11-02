@@ -162,10 +162,10 @@ class KANVisualizer {
 
     updateGuide() {
         const explanations = {
-            network: 'I read left to right: inputs, hidden nodes, then output. I select a node or edge in the graph or the labelled menus. Width summarizes sampled edge RMS, not the contribution at a particular input.',
-            splines: 'I choose a layer and connection to inspect its full sampled edge function: base activation plus Gaussian RBF branch. The diamonds mark Gaussian centers at zero; they are not measured contributions.',
-            inference: 'I move a slider with the arrow keys to recompute the exported model. Labels show actual activations, and edges show signed contributions at this input. I compare the prediction with the known synthetic target.',
-            training: 'I read the loss recorded during training, not a live optimization. The second chart shows the signed relative decrease in rolling-mean loss; a negative value means the loss rose.'
+            network: 'Read left to right: inputs, hidden nodes, then output. Select a node or edge to inspect it. Edge width summarizes sampled edge RMS.',
+            splines: 'Choose a layer and connection to inspect its base activation plus Gaussian RBF branch. Diamonds mark the Gaussian centers.',
+            inference: 'Move a slider to recompute the model. Labels show actual activations; edges show signed contributions. The output appears beside the target value.',
+            training: 'The recorded training loss appears beside its relative decrease over a rolling window. A negative decrease means the loss rose.'
         };
         document.getElementById('view-explanation').textContent = explanations[this.currentMode];
         document.querySelectorAll('.guide-steps button').forEach(button => {

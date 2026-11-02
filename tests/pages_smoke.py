@@ -19,7 +19,7 @@ EXPLANATIONS = {
     'network': 'sampled edge RMS',
     'splines': 'base activation plus Gaussian RBF',
     'inference': 'actual activations',
-    'training': 'not a live optimization',
+    'training': 'recorded training loss',
 }
 
 
@@ -115,7 +115,7 @@ with tempfile.TemporaryDirectory(prefix='kan-pages-preview-') as preview:
             page.wait_for_selector('#loading-overlay', state='hidden')
             assert page.locator('.guide-steps button').count() == 4
             assert 'illustrate connectivity' in page.locator('#motion-note').inner_text()
-            assert 'real inference' in page.locator('#motion-note').inner_text()
+            assert 'recompute predictions' in page.locator('#motion-note').inner_text()
             records, layouts, keyboard_records = [], [], []
             for width in [1440, 390, 320]:
                 page.set_viewport_size({'width': width, 'height': 1100})
@@ -277,11 +277,11 @@ with tempfile.TemporaryDirectory(prefix='kan-pages-preview-') as preview:
             assert not errors, errors
             assert not failed_requests, failed_requests
             assert not bad_responses, bad_responses
-            screenshot = ROOT / 'docs/assets/pages-inference.png'
+            screenshot = ROOT / '_smoke/pages-inference.png'
             screenshot.parent.mkdir(parents=True, exist_ok=True)
             page.screenshot(path=str(screenshot), full_page=True, animations='disabled')
-            report = {'url': url, 'browser': f'Playwright Chromium {browser.version}', 'headless': True, 'viewport': {'width': 1440, 'height': 1100}, 'tested_viewport_widths': [1440, 390, 320], 'console_errors': errors, 'failed_requests': failed_requests, 'http_errors': bad_responses, 'local_request_paths': sorted(set(local_paths)), 'models': records, 'layouts': layouts, 'keyboard_selections': keyboard_records, 'reduced_motion': motion_records, 'screenshot': 'docs/assets/pages-inference.png', 'export_sha256': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted((ROOT / 'web/data').glob('*.json'))}}
-            (ROOT / 'results/browser_pages.json').write_text(json.dumps(report, indent=2) + '\n')
+            report = {'url': url, 'browser': f'Playwright Chromium {browser.version}', 'headless': True, 'viewport': {'width': 1440, 'height': 1100}, 'tested_viewport_widths': [1440, 390, 320], 'console_errors': errors, 'failed_requests': failed_requests, 'http_errors': bad_responses, 'local_request_paths': sorted(set(local_paths)), 'models': records, 'layouts': layouts, 'keyboard_selections': keyboard_records, 'reduced_motion': motion_records, 'screenshot': '_smoke/pages-inference.png', 'export_sha256': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted((ROOT / 'web/data').glob('*.json'))}}
+            (ROOT / '_smoke/browser_pages.json').write_text(json.dumps(report, indent=2) + '\n')
             print(json.dumps(report, indent=2))
             browser.close()
     finally:
