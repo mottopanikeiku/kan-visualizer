@@ -158,7 +158,7 @@ def summarize(output_dir):
                "raw_files": [str(path.as_posix()) for path in raw_files],
                "rows": rows, "paired_mlp_wins": wins}
     save_json(output_dir / "summary.json", summary)
-    write_figure(rows, Path("docs/assets/mlp-comparison.svg"))
+    write_figure(rows, Path("assets/mlp-comparison.svg"))
     print(json.dumps(summary, indent=2))
 
 

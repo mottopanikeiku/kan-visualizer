@@ -1,6 +1,6 @@
 # Gaussian edge-network implementation
 
-I built a small KAN-inspired experiment, not a reproduction of the B-spline architecture in [Liu et al., *KAN: Kolmogorov-Arnold Networks*](https://arxiv.org/abs/2404.19756). The code uses fixed Gaussian radial basis functions (RBFs). I compare its accuracy with dense MLPs in [the multi-seed results](../results/mlp_comparison/summary.json); I do not measure an efficiency or interpretability advantage.
+The model uses fixed Gaussian radial basis functions (RBFs) on its edges. [Liu et al.'s KAN](https://arxiv.org/abs/2404.19756) uses B-splines. The [MLP comparison](../results/mlp_comparison/summary.json) measures regression error on the three demo tasks.
 
 ## Layer equation
 
@@ -16,7 +16,7 @@ output[j] = sum_i edge[j,i](x_i)
 
 `grid_size` is the number of intervals, so the fixed uniform grid has `grid_size + 1` centers. `sigma` is half the grid spacing. Only the RBF input is clamped; the base activation sees the original input. The available base activations are SiLU, ReLU, GELU, and tanh. Disabling the standalone scaler sets its effective value to one. Both global scale factors and every per-edge scaler are exported.
 
-The implementation is in `../kan_layer.py`. `forward` uses matrix operations without retaining intermediate edge tensors. `edge_contributions` returns signed per-edge values for display and checks. `../kan_network.py` stacks layers. There is no adaptive grid, spline fitting, pruning, or symbolic extraction API. The coefficient L1 and coefficient-distribution entropy penalties are not a smoothness guarantee.
+[kan_layer.py](../kan_layer.py) implements the layer. `forward` uses matrix operations without retaining intermediate edge tensors; `edge_contributions` returns signed per-edge values for display. [kan_network.py](../kan_network.py) stacks layers.
 
 ## Training and export
 
@@ -36,53 +36,49 @@ trainer.train(x, y, epochs=150, batch_size=128, verbose=False)
 export_kan_for_visualization(model, trainer, target_id="2d_gaussian")
 ```
 
-`../export_for_web.py` regenerates all bundled models with fixed CPU seeds and writes separate-grid MSE to `../results/demo_training.json`. The training histories contain average batch losses, not the independent evaluation-grid MSE. A vector-valued scalar target is converted to a column before training to avoid accidental loss broadcasting.
+[export_for_web.py](../export_for_web.py) regenerates the bundled models with fixed CPU seeds and writes evaluation-grid MSE to [results/demo_training.json](../results/demo_training.json). Training histories contain average batch losses. Scalar targets are converted to columns to avoid loss broadcasting.
 
-Exports declare `basis: gaussian_rbf`. The browser evaluates coefficients, base activation, input clamp, and scaling directly in `../web/js/model-forward.js`; it does not interpolate display curves. The same JavaScript module runs under Node for parity tests. Unsupported model schemas or activations raise errors. GELU uses an erf approximation in JavaScript; parity allows absolute and relative error of `1e-6` against PyTorch float32.
+Exports declare `basis: gaussian_rbf`. [model-forward.js](../web/js/model-forward.js) evaluates the coefficients, base activation, clamp and scaling directly. The same module runs under Node for parity tests. Unsupported schemas and activations raise errors. GELU uses an erf approximation; parity tests allow absolute and relative error of `1e-6` against PyTorch float32.
 
 ## Display meanings
 
-- Live inference nodes show actual current activations, and edge highlighting follows absolute signed contributions for the current input.
+- Live inference nodes show activations at the current input. Edges show signed contributions, with width proportional to magnitude.
 - The activation-flow plot reports mean absolute activation per layer, including the input layer.
-- Edge-function curves include both base and RBF terms. They are sampled functions, not fitted splines.
-- A graph summary over sampled edge values is not causal feature importance.
-- Targets are selected by exported task identity, not merely by input dimension. The two-dimensional wave is `sin(x) * exp(-y*y)`; the interaction task is `sin(x*y) + 0.5*tanh(x-y)`.
+- Edge curves include the base and RBF terms. Network-graph widths summarize RMS across those samples.
+- Targets follow the exported task identity. The two-dimensional wave is `sin(x) * exp(-y*y)`; the interaction task is `sin(x*y) + 0.5*tanh(x-y)`.
 
-I recommend the four-step guide at the top of the page: read the network, inspect an edge, move an input, then check the recorded training history. Node and edge selectors provide the same selection as graph clicks, without requiring a mouse. The live-inference view connects those curves to actual values; blue/red signs are also written as numbers rather than encoded only in color. Expand **Read numerical activations and edge contributions** for native labelled tables of every current value, outside the SVG's image role; those tables update with the sliders. Reduced-motion preferences disable automatic sweeps and particles while keeping sliders usable. Chromium checks the table roles, row labels and numbers, but I have not run a manual screen-reader session.
+The node and edge menus mirror graph clicks. Expand **Read numerical activations and edge contributions** for labelled tables that update with the sliders. Reduced-motion mode disables sweeps and particles while keeping manual controls.
 
 ## Browser deployment
 
-The static viewer needs no build or model training. `.github/workflows/pages.yml` checks Python/Node behavior, committed comparison results, JavaScript syntax, exported JSON, and headless desktop/mobile Chromium on pull requests, then uploads the entire `web/` directory, including `web/data/`. Pushes to `main` and manual workflow runs deploy that artifact with GitHub's Pages actions. Repository Pages settings must already allow GitHub Actions deployment; the workflow does not change them.
+The static viewer needs no build or model training. [The Pages workflow](../.github/workflows/pages.yml) checks Python/Node behavior, comparison data, JavaScript syntax and desktop/mobile browser interactions before deploying `web/`.
 
-Styles, scripts, and model fetches use document-relative paths, so the same files work at `/kan-visualizer/` without a root-path rewrite. To preview that prefix locally from the repository root:
+From the repository root:
 
-```bash
-preview=$(mktemp -d)
-ln -s "$PWD/web" "$preview/kan-visualizer"
-nice -n 19 python -m http.server 8002 --bind 127.0.0.1 --directory "$preview"
+```sh
+python3 -m http.server 8002 --bind 127.0.0.1 --directory web
 ```
 
-Open `http://127.0.0.1:8002/kan-visualizer/`. The page uses system font fallbacks and exact D3 `7.9.0` and Plotly `2.35.2` CDN URLs with SHA-384 integrity checks. Internet access is needed for those two libraries, but inference uses the checked-in model parameters entirely in the browser. Select a model, choose **live inference**, and change its input sliders to inspect the actual output and task target. The deployment smoke screenshot is in `docs/assets/pages-inference.png`.
+Open `http://127.0.0.1:8002/`. Scripts and model paths are relative, so deployment under `/kan-visualizer/` works too. D3 `7.9.0` and Plotly `2.35.2` load from CDN URLs with SHA-384 integrity checks; inference runs in the browser.
 
-`training_history.train_loss` is the exporter's recorded batch-average loss series; the training tab plots it directly. An empty `val_loss` array is not presented as a validation measurement. The repeatable prefix smoke check exercises all three models and four views at desktop and narrow mobile widths, compares the training trace with the exported series, selects nodes and edges with the keyboard, changes inference sliders, checks actual activations and edge summaries, verifies reduced-motion cancellation, checks that a slow earlier model response cannot replace a newer selection, and records errors, model outputs, and the screenshot:
+The browser suite covers all three models and four views at desktop and mobile widths. It checks keyboard selections, numerical tables, training traces, reduced motion and model-load ordering:
 
 ```bash
 uv run --no-project --with playwright==1.63.0 playwright install chromium
 uv run --no-project --with playwright==1.63.0 python tests/pages_smoke.py
 ```
 
-If Chromium is already installed elsewhere, set `KAN_CHROMIUM_PATH` to its executable for the second command. The smoke check writes `results/browser_pages.json` and `docs/assets/pages-inference.png`.
+If Chromium is already installed elsewhere, set `KAN_CHROMIUM_PATH` to its executable for the second command. The smoke check writes a report and screenshot to `_smoke/`.
 
+## Tests and MLP comparison
 
-## Verification and MLP comparison
+Run `.venv/bin/python test_kan.py` from the repository root with Node installed. The suite compares Python and JavaScript outputs, activations and edge contributions. It also checks exported curves, optimizer behavior, regularization and checkpoint restoration, and requires a seeded training task to reduce MSE tenfold.
 
-Run `nice -n 19 .venv/bin/python test_kan.py --report results/verification.json` from the repository root with Node installed. The runner returns a failure status if a check fails. It compares fixed Python/Node outputs, internal activations, and edge contributions, checks exported curves and targets, and requires a seeded toy training task to reduce MSE by at least a factor of ten. Trainer tests cover the LBFGS, Adam and AdamW paths, the regularization term in recorded loss, and best-validation checkpoints. This is a correctness and learnability check, not a generalization benchmark.
+[compare_mlp.py](../compare_mlp.py) uses the demo architectures and training settings. Dense MLPs have the same hidden-layer depth, linear output layers and Tanh or SiLU activations. Widths are chosen from parameter counts, including biases and edge scalers; counts differ by less than 0.3%.
 
-I compare the same three demo tasks in `../compare_mlp.py`. The Gaussian networks retain the exporter's architecture, Gaussian grid, training sample count, epochs, batch size, and learning rate. Dense MLPs use the same number of hidden layers, linear output layers, biases, and either Tanh or SiLU hidden activations. Widths are chosen from parameter counts, without looking at evaluation errors; MLP counts differ by less than 0.3%, including all biases and Gaussian edge scalers.
+For each of five seeds, all three model families receive identical uniform inputs on `[-2, 2]`, targets and minibatch orders. Initialization uses a separate generator. Adam uses the same task-specific learning rate and step budget for every model. The final iterate is evaluated, without checkpoint selection or tuning on the evaluation grid.
 
-For each of five seeds, all three model families receive identical uniform training inputs on `[-2, 2]`, target values, and shuffled minibatches. Separate generators keep those inputs and batches independent of each model's initialization. Adam uses the same task-specific learning rate and exact optimizer-step budget across families; the last iterate is evaluated, with no checkpoint selection or hyperparameter tuning on the evaluation grid. Seeds are paired data runs, not a guarantee of equivalent initialization across different architectures.
-
-The evaluation grids are the exporter's 201 evenly spaced one-dimensional inputs and the 31-by-31 two-dimensional grid, both spanning `[-2, 2]`. They are not the random training inputs. Raw per-seed files include initial and final MSE, final MAE and maximum absolute error, parameter counts, training steps, and hashes of training inputs, evaluation inputs, and minibatch orders. The summary checks that every task, model, and seed is present and paired before writing medians, min–max ranges, and the SVG figure.
+Evaluation uses 201 evenly spaced inputs in one dimension and a 31-by-31 grid in two dimensions. Per-seed files contain MSE, MAE, maximum absolute error, parameter counts, steps and hashes of the inputs and minibatch orders. The summary checks that runs are complete and paired before calculating medians and ranges.
 
 ```bash
 for seed in 1729 1730 1731 1732 1733; do
@@ -91,4 +87,4 @@ done
 .venv/bin/python compare_mlp.py --summarize
 ```
 
-I use regression error rather than classification accuracy because all targets are real-valued functions. These are small noiseless synthetic tasks, one fixed optimizer setting per task, and one final step budget. The original RBF range stays `[-1, 1]` while inputs span `[-2, 2]`; its branch clamps outside that range. I do not extrapolate this comparison to adaptive-grid KANs, the paper's B-splines, real data, or training speed. Bundled browser models remain the earlier single-seed exports, not the best runs from this comparison.
+The tasks are small noiseless functions with one optimizer setting each. The Gaussian centers are fixed, and the RBF branch clamps to `[-1, 1]` while inputs span `[-2, 2]`. The browser keeps its original single-seed exports. Edge width in the graph shows sampled RMS, which is not feature importance.
