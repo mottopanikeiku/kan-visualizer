@@ -118,7 +118,7 @@ class SplineVisualization {
             <div class="stat-item"><span>sampled output range:</span><strong>[${min.toFixed(3)}, ${max.toFixed(3)}]</strong></div>
             <div class="stat-item"><span>grid:</span><strong>${layer.grid_points.length - 1} intervals / ${layer.grid_points.length} centers</strong></div>
             <div class="stat-item"><span>sampled input range:</span><strong>[${Math.min(...data.x_values).toFixed(2)}, ${Math.max(...data.x_values).toFixed(2)}]</strong></div>
-            <p>I use ${data.y_values.length} exported full-edge samples for these statistics, not to measure feature importance. The base activation uses the unclamped input.</p>
+            <p>These statistics summarize ${data.y_values.length} exported full-edge samples, so they describe the size of the curve rather than feature importance. In those samples the base activation sees the unclamped input.</p>
         `;
     }
 }

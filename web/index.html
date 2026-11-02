@@ -57,7 +57,7 @@
                 <li><button type="button" data-view="training">4. Check the loss</button></li>
             </ol>
             <p id="view-explanation" role="status" aria-live="polite"></p>
-            <p id="motion-note">Particles illustrate connectivity. Input sweeps recompute predictions. Reduced-motion mode keeps the manual controls.</p>
+            <p id="motion-note">In the network view, particles illustrate connectivity, and in the inference view, input sweeps recompute predictions. Reduced-motion mode turns both off but keeps the manual controls.</p>
         </section>
         <!-- network visualization panel -->
         <section id="network-panel" class="panel active" aria-labelledby="network-title">
@@ -72,7 +72,7 @@
                 <svg id="network-svg" role="img" aria-label="Network architecture" aria-describedby="network-keyboard-help"></svg>
                 <div id="network-sidebar">
                     <div class="graph-controls">
-                        <p id="network-keyboard-help">Select a node or edge in the graph or use these menus. Arrow keys change the menu selection.</p>
+                        <p id="network-keyboard-help">Select a node or edge in the graph or with these menus, where the arrow keys change the selection.</p>
                         <label for="network-node-select">Inspect node</label>
                         <select id="network-node-select" aria-controls="layer-info"></select>
                         <label for="network-edge-select">Inspect edge</label>
@@ -116,7 +116,7 @@
         <section id="inference-panel" class="panel" aria-labelledby="inference-title">
             <div class="panel-header">
                 <h2 id="inference-title">Live inference</h2>
-                <p id="inference-legend">Nodes show activations; edges show contributions at the current input. Size scales with magnitude. Blue is nonnegative; red is negative.</p>
+                <p id="inference-legend">Nodes show activations and edges show contributions at the current input. Size follows magnitude, while color shows the sign, blue for nonnegative values and red for negative ones.</p>
             </div>
             <div class="visualization-container">
                 <div class="input-controls">
@@ -130,7 +130,7 @@
                     <div id="inference-network"></div>
                     <details id="inference-values">
                         <summary>Read numerical activations and edge contributions</summary>
-                        <p>The same values as the graph, rounded to six decimal places. Input rows are task coordinates; edge layers start at 1.</p>
+                        <p>These are the same values as in the graph, rounded to six decimal places, where input rows are task coordinates and edge layers are numbered from 1.</p>
                         <table>
                             <caption>Actual node activations</caption>
                             <thead><tr><th scope="col">Node</th><th scope="col">Activation</th></tr></thead>
@@ -159,7 +159,7 @@
         <section id="training-panel" class="panel" aria-labelledby="training-title">
             <div class="panel-header">
                 <h2 id="training-title">Recorded training loss</h2>
-                <p>Loss by training epoch, with validation loss when available.</p>
+                <p>The chart plots loss by training epoch and adds validation loss when the export has it.</p>
             </div>
             <div class="visualization-container">
                 <div id="training-plots" role="img" aria-label="Recorded training loss and relative rolling-mean loss decrease"></div>

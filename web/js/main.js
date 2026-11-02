@@ -162,10 +162,10 @@ class KANVisualizer {
 
     updateGuide() {
         const explanations = {
-            network: 'Read left to right: inputs, hidden nodes, then output. Select a node or edge to inspect it. Edge width summarizes sampled edge RMS.',
-            splines: 'Choose a layer and connection to inspect its base activation plus Gaussian RBF branch. Diamonds mark the Gaussian centers.',
-            inference: 'Move a slider to recompute the model. Labels show actual activations; edges show signed contributions. The output appears beside the target value.',
-            training: 'The recorded training loss appears beside its relative decrease over a rolling window. A negative decrease means the loss rose.'
+            network: 'The graph reads left to right from the inputs through the hidden nodes to the output, and you can select any node or edge to inspect it. Edge width summarizes sampled edge RMS.',
+            splines: 'Choose a layer and connection to inspect its base activation plus Gaussian RBF branch, with diamonds marking the Gaussian centers.',
+            inference: 'Moving a slider recomputes the model, after which the labels show actual activations, the edges show signed contributions and the output appears beside the target value.',
+            training: 'The recorded training loss appears beside its relative decrease over a rolling window, so a negative decrease means the loss rose.'
         };
         document.getElementById('view-explanation').textContent = explanations[this.currentMode];
         document.querySelectorAll('.guide-steps button').forEach(button => {
